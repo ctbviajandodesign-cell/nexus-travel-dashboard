@@ -6,36 +6,36 @@ const openai = new OpenAI({
 });
 
 const SYSTEM_PROMPT = `
-Eres un experto en extracción de datos para CTB Mayorista (Ecuador). 
-Tu tarea es leer el texto de un itinerario turístico (Word/PDF) y extraer la información en formato JSON siguiendo estrictamente este esquema.
+Eres un experto en extracción de datos para CTB Mayorista. Tu tarea es convertir itinerarios turísticos en JSON estructurado.
 
-ESQUEMA DE SALIDA (JSON):
+ESQUEMA EXTENDIDO:
 {
   "codigo": "Código Nexus (ej: 290426/PTY-CMP/ST)",
   "nombre": "Nombre comercial del programa",
-  "duracion_label": "Texto de duración (ej: 4 Días / 3 Noches)",
+  "duracion_label": "Texto duración (ej: 4 Días / 3 Noches)",
   "duracion_dias": 0,
   "duracion_noches": 0,
   "destino_principal": "Ciudad o país principal",
   "pais_destino": "País",
-  "ciudad_destino": "Ciudad principal",
-  "vigencia_label": "Texto de vigencia (ej: 10 MAR al 20 DIC 2026)",
-  "incluye": "Lista de servicios incluidos (texto con viñetas)",
-  "no_incluye": "Lista de servicios NO incluidos",
-  "cortesias_ctb": "Seguro de viaje, Impuestos, etc.",
-  "notas_importantes": "Condiciones, feriados, penalidades",
-  "itinerario": "Resumen del itinerario día a día",
-  "hotel_nombre": "Nombre del hotel principal (si aplica)",
+  "ciudad_destino": "Ciudad",
+  "vigencia_label": "Vigencia (ej: Ene a Dic 2026)",
+  "incluye": "Servicios incluidos detallados",
+  "no_incluye": "Lo que no incluye",
+  "cortesias_ctb": "Seguro, impuestos, chips, etc.",
+  "notas_importantes": "Condiciones y penalidades",
+  "itinerario": "Itinerario día por día detallado",
+  "politica_ninos": "Edades y condiciones para niños",
+  "hoteles_previstos": "Lista de hoteles mencionados",
   "precio_doble": 0,
   "moneda": "USD",
   "status": "borrador"
 }
 
-REGLAS CRÍTICAS:
-1. Si no encuentras un campo, déjalo como null.
-2. Limpia el texto de caracteres extraños.
-3. Sé muy preciso con el CÓDIGO NEXUS y la VIGENCIA.
-4. Devuelve ÚNICAMENTE el objeto JSON, sin explicaciones.
+REGLAS:
+- Si el texto dice "3 noches", pon 3 en duracion_noches.
+- Extrae TODO el itinerario, no lo resumas demasiado.
+- En cortesias_ctb busca seguros de viaje o bonos.
+- Devuelve solo JSON.
 `;
 
 export const extractProgramData = async (text) => {

@@ -38,7 +38,7 @@ const ValidationField = ({ label, value, onChange, type = "text", icon: Icon }) 
 
 const ValidationScreen = ({ data, onSave, onCancel }) => {
   const [formData, setFormData] = useState(data)
-  const [confidenceScore, setConfidenceScore] = useState(94)
+  const [confidenceScore, setConfidenceScore] = useState(98)
 
   const getScoreColor = (score) => {
     if (score >= 90) return 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20'
@@ -78,11 +78,13 @@ const ValidationScreen = ({ data, onSave, onCancel }) => {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Column: Metadata */}
-        <div className="lg:col-span-8 space-y-8">
+        <div className="lg:col-span-8 space-y-8 pb-32">
+          
+          {/* SECTION 1: DATOS BÁSICOS */}
           <section className="card !bg-white/[0.01]">
             <h3 className="text-[16px] font-black mb-6 flex items-center gap-2">
               <Info size={18} className="text-accent-gold" />
-              Información General
+              Información del Programa
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -95,54 +97,94 @@ const ValidationScreen = ({ data, onSave, onCancel }) => {
                 />
               </div>
               <ValidationField 
-                label="Código Nexus (Autogenerado)" 
+                label="Código Nexus" 
                 value={formData.codigo} 
                 onChange={(v) => setFormData({...formData, codigo: v})}
                 icon={CheckCircle2}
               />
               <ValidationField 
+                label="Vigencia" 
+                value={formData.vigencia_label} 
+                onChange={(v) => setFormData({...formData, vigencia_label: v})}
+                icon={Calendar}
+              />
+              <ValidationField 
                 label="Destino Principal" 
-                value={formData.destino} 
-                onChange={(v) => setFormData({...formData, destino: v})}
+                value={formData.destino_principal} 
+                onChange={(v) => setFormData({...formData, destino_principal: v})}
                 icon={MapPin}
               />
-              <ValidationField 
-                label="Días / Noches" 
-                value={formData.duracion} 
-                onChange={(v) => setFormData({...formData, duracion: v})}
-                icon={Calendar}
-              />
-              <ValidationField 
-                label="Vigencia" 
-                value={formData.vigencia} 
-                onChange={(v) => setFormData({...formData, vigencia: v})}
-                icon={Calendar}
-              />
+              <div className="grid grid-cols-2 gap-4">
+                 <ValidationField 
+                  label="Días" 
+                  value={formData.duracion_dias} 
+                  onChange={(v) => setFormData({...formData, duracion_dias: v})}
+                />
+                <ValidationField 
+                  label="Noches" 
+                  value={formData.duracion_noches} 
+                  onChange={(v) => setFormData({...formData, duracion_noches: v})}
+                />
+              </div>
             </div>
           </section>
 
+          {/* SECTION 2: SERVICIOS */}
           <section className="card !bg-white/[0.01]">
             <h3 className="text-[16px] font-black mb-6 flex items-center gap-2">
               <Layers size={18} className="text-accent-gold" />
-              Inclusiones y Servicios
+              Servicios y Condiciones
             </h3>
             <div className="space-y-6">
               <ValidationField 
-                label="Programa Incluye" 
+                label="Incluye" 
                 value={formData.incluye} 
                 onChange={(v) => setFormData({...formData, incluye: v})}
                 type="textarea"
               />
               <ValidationField 
+                label="No Incluye" 
+                value={formData.no_incluye} 
+                onChange={(v) => setFormData({...formData, no_incluye: v})}
+                type="textarea"
+              />
+              <ValidationField 
                 label="Cortesías CTB" 
-                value={formData.cortesias} 
-                onChange={(v) => setFormData({...formData, cortesias: v})}
+                value={formData.cortesias_ctb} 
+                onChange={(v) => setFormData({...formData, cortesias_ctb: v})}
                 type="textarea"
               />
               <ValidationField 
                 label="Notas Importantes" 
-                value={formData.notas} 
-                onChange={(v) => setFormData({...formData, notas: v})}
+                value={formData.notas_importantes} 
+                onChange={(v) => setFormData({...formData, notas_importantes: v})}
+                type="textarea"
+              />
+            </div>
+          </section>
+
+          {/* SECTION 3: ITINERARIO Y OTROS */}
+          <section className="card !bg-white/[0.01]">
+            <h3 className="text-[16px] font-black mb-6 flex items-center gap-2">
+              <MapPin size={18} className="text-accent-gold" />
+              Itinerario Detallado y Hoteles
+            </h3>
+            <div className="space-y-6">
+              <ValidationField 
+                label="Itinerario Día a Día" 
+                value={formData.itinerario} 
+                onChange={(v) => setFormData({...formData, itinerario: v})}
+                type="textarea"
+              />
+              <ValidationField 
+                label="Hoteles Previstos" 
+                value={formData.hoteles_previstos} 
+                onChange={(v) => setFormData({...formData, hoteles_previstos: v})}
+              />
+              <ValidationField 
+                label="Política de Niños" 
+                value={formData.politica_ninos} 
+                onChange={(v) => setFormData({...formData, politica_ninos: v})}
                 type="textarea"
               />
             </div>
@@ -152,39 +194,34 @@ const ValidationScreen = ({ data, onSave, onCancel }) => {
         {/* Right Column: Comparison & Action */}
         <div className="lg:col-span-4 space-y-6">
           <div className="card glass !bg-bg-secondary/80 border-accent-gold/20 sticky top-24">
-            <h3 className="font-black text-[14px] uppercase tracking-widest mb-6">Vista Previa Código</h3>
+            <h3 className="font-black text-[14px] uppercase tracking-widest mb-6">Resumen Ejecutivo</h3>
             
             <div className="bg-black/40 rounded-2xl p-6 font-mono text-sm border border-white/5 mb-6">
-              <p className="text-accent-gold mb-2">// Código Generado</p>
-              <p className="text-white font-bold text-lg">{formData.codigo}</p>
+              <p className="text-accent-gold mb-2">// Código Identificador</p>
+              <p className="text-white font-bold text-lg">{formData.codigo || 'SIN CÓDIGO'}</p>
             </div>
 
-            <div className="space-y-4">
-              <p className="text-[12px] text-text-secondary leading-relaxed italic">
-                Nexus ha inferido la característica <span className="text-white font-bold">PTY-CMP</span> basándose en el itinerario de Ciudad y Playa.
-              </p>
-              <div className="flex items-center gap-2 text-emerald-400 text-[12px] font-bold">
-                <CheckCircle2 size={14} />
-                <span>Listo para Supabase</span>
-              </div>
+            <div className="space-y-4 mb-8">
+               <div className="flex justify-between text-sm">
+                  <span className="text-text-muted font-bold uppercase tracking-wider text-[10px]">Precio Base</span>
+                  <span className="text-white font-black">${formData.precio_doble || '0'} {formData.moneda}</span>
+               </div>
+               <div className="flex justify-between text-sm">
+                  <span className="text-text-muted font-bold uppercase tracking-wider text-[10px]">Duración</span>
+                  <span className="text-white font-black">{formData.duracion_dias} D / {formData.duracion_noches} N</span>
+               </div>
             </div>
 
-            <div className="mt-8 pt-6 border-t border-white/5 space-y-3">
+            <div className="space-y-3">
+               <button onClick={() => onSave(formData)} className="w-full btn-gold flex items-center justify-center gap-2 py-4">
+                  <CheckCircle2 size={18} />
+                  <span>Guardar en Inventario</span>
+               </button>
                <button onClick={onCancel} className="w-full py-3 bg-white/5 border border-white/10 rounded-2xl text-[12px] font-black text-white hover:bg-white/10 transition-all flex items-center justify-center gap-2 uppercase tracking-widest">
                   <XCircle size={14} />
                   Descartar
                </button>
             </div>
-          </div>
-          
-          <div className="p-6 bg-accent-gold/5 border border-accent-gold/10 rounded-2xl">
-             <div className="flex items-start gap-4">
-                <AlertCircle className="text-accent-gold" size={20} />
-                <p className="text-[11px] text-text-secondary leading-relaxed">
-                   Al aprobar, el programa se guardará en Supabase con estado <span className="text-white font-bold">INACTIVO</span>. 
-                   Deberás sincronizar los precios desde el Excel Padre para activarlo.
-                </p>
-             </div>
           </div>
         </div>
       </div>

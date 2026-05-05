@@ -100,14 +100,25 @@ const FileStatus = ({ file, status, progress, onValidate }) => {
 }
 
 const EMPTY_PROGRAM = {
-  nombre: '',
   codigo: '',
-  destino: '',
-  duracion: '',
-  vigencia: '',
+  nombre: '',
+  duracion_label: '',
+  duracion_dias: 0,
+  duracion_noches: 0,
+  destino_principal: '',
+  pais_destino: '',
+  ciudad_destino: '',
+  vigencia_label: '',
   incluye: '',
-  cortesias: '',
-  notas: ''
+  no_incluye: '',
+  cortesias_ctb: '',
+  notas_importantes: '',
+  itinerario: '',
+  hoteles_previstos: '',
+  politica_ninos: '',
+  precio_doble: 0,
+  moneda: 'USD',
+  status: 'borrador'
 }
 
 function App() {
@@ -470,13 +481,23 @@ function App() {
                   const record = {
                     codigo:              newData.codigo,
                     nombre:              newData.nombre,
-                    destino_principal:   newData.destino,
-                    duracion_label:      newData.duracion,
-                    vigencia_label:      newData.vigencia,
+                    duracion_label:      newData.duracion_label,
+                    duracion_dias:       parseInt(newData.duracion_dias) || 0,
+                    duracion_noches:     parseInt(newData.duracion_noches) || 0,
+                    destino_principal:   newData.destino_principal,
+                    pais_destino:        newData.pais_destino,
+                    ciudad_destino:      newData.ciudad_destino,
+                    vigencia_label:      newData.vigencia_label,
                     incluye:             newData.incluye,
-                    cortesias_ctb:       newData.cortesias,
-                    notas_importantes:   newData.notas,
-                    status:              'activo',
+                    no_incluye:          newData.no_incluye,
+                    cortesias_ctb:       newData.cortesias_ctb,
+                    notas_importantes:   newData.notas_importantes,
+                    itinerario:          newData.itinerario,
+                    hoteles_previstos:   newData.hoteles_previstos,
+                    politica_ninos:      newData.politica_ninos,
+                    precio_doble:        parseFloat(newData.precio_doble) || 0,
+                    moneda:              newData.moneda || 'USD',
+                    status:              newData.status || 'borrador',
                   }
                   // Check if editing an existing program
                   const isEdit = inventoryPrograms.find(p => p.id === validatingFile.id)
