@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { supabase } from './lib/supabase'
+import { extractProgramData } from './lib/ai'
+import mammoth from 'mammoth'
 import { 
   Upload, 
   FileText, 
@@ -187,46 +189,56 @@ function App() {
     fileInputRef.current?.click()
   }
 
-  const handleFileInputChange = (e) => {
-    const selectedFiles = Array.from(e.target.files)
-    selectedFiles.forEach(file => {
-      const newFile = { id: Date.now() + Math.random(), name: file.name, status: 'extracting', progress: 0 }
+  const handleFiles = async (acceptedFiles) => {
+    acceptedFiles.forEach(async (file) => {
+      const newFile = { 
+        id: Date.now() + Math.random(), 
+        name: file.name, 
+        status: 'extracting', 
+        progress: 10 
+      }
       setFiles(prev => [newFile, ...prev])
-      let p = 0
-      const interval = setInterval(() => {
-        p += 5
-        if (p >= 100) {
-          clearInterval(interval)
-          setFiles(prev => prev.map(f => f.id === newFile.id ? { ...f, status: 'validating', progress: 100 } : f))
-        } else {
-          setFiles(prev => prev.map(f => f.id === newFile.id ? { ...f, progress: p } : f))
+
+      try {
+        // 1. Extraer texto del Word usando Mammoth
+        const arrayBuffer = await file.arrayBuffer()
+        const result = await mammoth.extractRawText({ arrayBuffer })
+        const rawText = result.value
+        
+        setFiles(prev => prev.map(f => f.id === newFile.id ? { ...f, progress: 40 } : f))
+
+        // 2. Procesar con IA (GPT-4o-mini)
+        const extracted = await extractProgramData(rawText)
+        
+        const fileWithData = { 
+          ...newFile, 
+          status: 'validating', 
+          progress: 100, 
+          extractedData: { ...EMPTY_PROGRAM, ...extracted } 
         }
-      }, 100)
+
+        setFiles(prev => prev.map(f => f.id === newFile.id ? fileWithData : f))
+        
+        // 3. Abrir automáticamente para validar
+        setValidatingFile(fileWithData)
+        setView('validation')
+
+      } catch (error) {
+        console.error("Error procesando archivo:", error)
+        setFiles(prev => prev.map(f => f.id === newFile.id ? { ...f, status: 'error' } : f))
+      }
     })
-    // Reset input so the same file can be re-selected
+  }
+
+  const handleFileInputChange = (e) => {
+    handleFiles(Array.from(e.target.files))
     e.target.value = ''
   }
 
   const onDrop = (e) => {
     e.preventDefault()
     setIsDragging(false)
-    const droppedFiles = Array.from(e.dataTransfer.files)
-    
-    droppedFiles.forEach(file => {
-      const newFile = { id: Date.now() + Math.random(), name: file.name, status: 'extracting', progress: 0 }
-      setFiles(prev => [newFile, ...prev])
-      
-      let p = 0
-      const interval = setInterval(() => {
-        p += 5
-        if (p >= 100) {
-          clearInterval(interval)
-          setFiles(prev => prev.map(f => f.id === newFile.id ? { ...f, status: 'validating', progress: 100 } : f))
-        } else {
-          setFiles(prev => prev.map(f => f.id === newFile.id ? { ...f, progress: p } : f))
-        }
-      }, 100)
-    })
+    handleFiles(Array.from(e.dataTransfer.files))
   }
 
   return (
