@@ -484,6 +484,7 @@ function App() {
                     duracion_label:      newData.duracion_label,
                     duracion_dias:       parseInt(newData.duracion_dias) || 0,
                     duracion_noches:     parseInt(newData.duracion_noches) || 0,
+                    tipo_operacion:      newData.tipo_operacion,
                     destino_principal:   newData.destino_principal,
                     pais_destino:        newData.pais_destino,
                     ciudad_destino:      newData.ciudad_destino,
@@ -496,6 +497,8 @@ function App() {
                     hoteles_previstos:   newData.hoteles_previstos,
                     politica_ninos:      newData.politica_ninos,
                     precio_doble:        parseFloat(newData.precio_doble) || 0,
+                    precio_sencillo:     parseFloat(newData.precio_sencillo) || 0,
+                    precio_triple:       parseFloat(newData.precio_triple) || 0,
                     moneda:              newData.moneda || 'USD',
                     status:              newData.status || 'borrador',
                   }

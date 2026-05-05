@@ -103,15 +103,27 @@ const ValidationScreen = ({ data, onSave, onCancel }) => {
                 icon={CheckCircle2}
               />
               <ValidationField 
+                label="Tipo de Operación" 
+                value={formData.tipo_operacion} 
+                onChange={(v) => setFormData({...formData, tipo_operacion: v})}
+                icon={Layers}
+              />
+              <ValidationField 
                 label="Vigencia" 
                 value={formData.vigencia_label} 
                 onChange={(v) => setFormData({...formData, vigencia_label: v})}
                 icon={Calendar}
               />
               <ValidationField 
-                label="Destino Principal" 
-                value={formData.destino_principal} 
-                onChange={(v) => setFormData({...formData, destino_principal: v})}
+                label="País Destino" 
+                value={formData.pais_destino} 
+                onChange={(v) => setFormData({...formData, pais_destino: v})}
+                icon={MapPin}
+              />
+              <ValidationField 
+                label="Ciudad Destino" 
+                value={formData.ciudad_destino} 
+                onChange={(v) => setFormData({...formData, ciudad_destino: v})}
                 icon={MapPin}
               />
               <div className="grid grid-cols-2 gap-4">
@@ -202,13 +214,24 @@ const ValidationScreen = ({ data, onSave, onCancel }) => {
             </div>
 
             <div className="space-y-4 mb-8">
-               <div className="flex justify-between text-sm">
-                  <span className="text-text-muted font-bold uppercase tracking-wider text-[10px]">Precio Base</span>
-                  <span className="text-white font-black">${formData.precio_doble || '0'} {formData.moneda}</span>
-               </div>
-               <div className="flex justify-between text-sm">
-                  <span className="text-text-muted font-bold uppercase tracking-wider text-[10px]">Duración</span>
-                  <span className="text-white font-black">{formData.duracion_dias} D / {formData.duracion_noches} N</span>
+               <ValidationField 
+                  label="Precio Sencilla" 
+                  value={formData.precio_sencillo} 
+                  onChange={(v) => setFormData({...formData, precio_sencillo: v})}
+               />
+               <ValidationField 
+                  label="Precio Doble" 
+                  value={formData.precio_doble} 
+                  onChange={(v) => setFormData({...formData, precio_doble: v})}
+               />
+               <ValidationField 
+                  label="Precio Triple" 
+                  value={formData.precio_triple} 
+                  onChange={(v) => setFormData({...formData, precio_triple: v})}
+               />
+               <div className="flex justify-between text-sm pt-4 border-t border-white/5">
+                  <span className="text-text-muted font-bold uppercase tracking-wider text-[10px]">Moneda</span>
+                  <span className="text-white font-black">{formData.moneda || 'USD'}</span>
                </div>
             </div>
 
