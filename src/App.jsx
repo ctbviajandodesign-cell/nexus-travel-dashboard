@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { supabase } from './lib/supabase'
 import { extractProgramData } from './lib/ai'
-import mammoth from 'mammoth'
+import * as mammoth from 'mammoth/mammoth.browser'
 import { 
   Upload, 
   FileText, 
@@ -225,6 +225,7 @@ function App() {
 
       } catch (error) {
         console.error("Error procesando archivo:", error)
+        alert("Error al procesar archivo: " + error.message)
         setFiles(prev => prev.map(f => f.id === newFile.id ? { ...f, status: 'error' } : f))
       }
     })
