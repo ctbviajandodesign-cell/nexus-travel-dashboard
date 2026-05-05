@@ -139,7 +139,7 @@ const InventoryTable = ({ programs, onEdit, onToggleStatus, onView, onDelete }) 
                   <StatusBadge status={prog.status} />
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex items-center justify-end gap-1 transition-opacity">
                     <button 
                       onClick={() => onView(prog)}
                       className="p-2 text-text-muted hover:text-white transition-colors" 

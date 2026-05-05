@@ -494,9 +494,18 @@ function App() {
                 exit={{ opacity: 0, x: -20 }}
                 className="max-w-[1100px] mx-auto pt-8"
               >
-                <div className="mb-10">
-                  <h1 className="text-[36px] font-black tracking-tight leading-tight">Inventario de Programas</h1>
-                  <p className="text-text-secondary text-[16px] font-medium mt-1">Gestión centralizada de productos turísticos aprobados.</p>
+                <div className="mb-10 flex items-end justify-between">
+                  <div>
+                    <h1 className="text-[36px] font-black tracking-tight leading-tight">Inventario de Programas</h1>
+                    <p className="text-text-secondary text-[16px] font-medium mt-1">Gestión centralizada de productos turísticos aprobados.</p>
+                  </div>
+                  <button 
+                    onClick={handleNuevoPrograma}
+                    className="btn-gold flex items-center gap-2"
+                  >
+                    <Plus size={18} />
+                    <span>Nuevo Programa</span>
+                  </button>
                 </div>
                 
                 {loading ? (
