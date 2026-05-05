@@ -150,9 +150,10 @@ function App() {
       console.error('Error cargando programas:', error)
       setDbError(error.message)
     } else {
-      // Normalize fields to match UI expectations
+      // Map and preserve all fields
       setInventoryPrograms(data.map(p => ({
         ...p,
+        // Aliases for backward compatibility in some UI parts
         destino: p.destino_principal || p.ciudad_destino || '',
         duracion: p.duracion_label || '',
         notas: p.notas_importantes || '',
