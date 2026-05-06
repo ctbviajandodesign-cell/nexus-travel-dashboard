@@ -213,16 +213,16 @@ function App() {
 
       try {
         const arrayBuffer = await file.arrayBuffer()
-        // Convertimos a HTML para mantener la estructura de tablas y listas
-        const result = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer })
-        const htmlContent = result.value
+        // Usamos extractRawText para una lectura más limpia y evitar ruido de etiquetas HTML
+        const result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer })
+        const textContent = result.value
         
-        console.log("Contenido extraído del Word (HTML):", htmlContent.substring(0, 500) + "...")
+        console.log("Texto extraído (Vista previa):", textContent.substring(0, 300))
         
         setFiles(prev => prev.map(f => f.id === newFile.id ? { ...f, progress: 40 } : f))
 
         // 2. Procesar con IA (GPT-4o-mini)
-        const extracted = await extractProgramData(htmlContent)
+        const extracted = await extractProgramData(textContent)
         
         const fileWithData = { 
           ...newFile, 
@@ -518,6 +518,8 @@ function App() {
                       .from('programas')
                       .insert([record])
                     if (error) { console.error('Error guardando:', error); return }
+
+                     if (error) { console.error('Error guardando:', error); return }
                   }
                   await loadPrograms()
                   setView(activeTab === 'inventory' ? 'inventory' : 'dashboard')

@@ -6,17 +6,16 @@ const openai = new OpenAI({
 });
 
 const SYSTEM_PROMPT = `
-Eres un extractor de datos de alta precisión para CTB Mayorista. 
-Recibirás el contenido de un itinerario en formato HTML. Tu misión es convertirlo en JSON.
+Eres un procesador de datos de alta fidelidad para CTB Mayorista. Tu tarea es extraer CADA DETALLE de itinerarios turísticos.
 
-REGLAS CRÍTICAS:
-1. DURACIÓN: Cuenta físicamente cuántos días aparecen en el itinerario (Día 1, Día 2...). Pon ese número en "duracion_dias" y (días - 1) en "duracion_noches". Es inaceptable omitir días.
-2. ITINERARIO: Extrae el texto INTEGRO de cada día. NO RESUMAS. Cada día debe empezar con "Día X:". Si el documento tiene 10 días, el JSON debe tener los 10 días.
-3. CIUDADES: Lista todas las ciudades mencionadas en el itinerario separadas por comas en "ciudad_destino".
-4. PRECIOS: Busca tablas de precios y extrae los valores para Sencilla, Doble y Triple.
-5. NO inventes datos. Si no existe, "".
+REGLAS DE EXTRACCIÓN (ESTRICTAS):
+1. ITINERARIO: Debes extraer CADA DÍA por separado. Si el documento dice "Día 1" hasta "Día 15", DEBES extraer los 15 días completos. Es un error crítico resumir o agrupar días.
+2. DURACIÓN: Cuenta los días reales del itinerario basándote en los bloques de texto. El número de noches debe ser (Días - 1).
+3. PRECIOS: Busca las palabras "Sencilla", "Doble" y "Triple". Extrae los valores numéricos correspondientes.
+4. CIUDADES: Identifica todas las ciudades visitadas y lístalas separadas por comas.
+5. NO INVENTES: Si un dato no existe, déjalo como "".
 
-ESQUEMA JSON:
+ESQUEMA DE SALIDA:
 {
   "codigo": "",
   "nombre": "",
@@ -44,23 +43,23 @@ ESQUEMA JSON:
 
 export const extractProgramData = async (text) => {
   try {
-    console.log("Enviando texto a OpenAI para extracción (Longitud:", text.length, "caracteres)");
+    console.log("Iniciando extracción profunda del documento...");
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: `Analiza este texto y extrae el JSON. ES CRÍTICO QUE EL ITINERARIO ESTÉ COMPLETO DÍA POR DÍA. NO RESUMAS:\n\n${text}` }
+        { role: "user", content: `Analiza el siguiente itinerario y extrae TODOS los campos. El itinerario debe ser íntegro:\n\n${text}` }
       ],
       temperature: 0,
       max_tokens: 4000,
       response_format: { type: "json_object" }
     });
 
-    const result = JSON.parse(response.choices[0].message.content);
-    console.log("Resultado de la IA:", result);
-    return result;
+    const data = JSON.parse(response.choices[0].message.content);
+    console.log("Extracción completada:", data);
+    return data;
   } catch (error) {
-    console.error("Error crítico en extractProgramData:", error);
-    throw error;
+    console.error("Error en motor de IA:", error);
+    throw new Error("La IA no pudo procesar este documento.");
   }
 };
