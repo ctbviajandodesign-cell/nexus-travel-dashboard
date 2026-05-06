@@ -6,53 +6,59 @@ const openai = new OpenAI({
 });
 
 const SYSTEM_PROMPT = `
-Eres un experto en extracción de datos para CTB Mayorista. Tu tarea es convertir itinerarios turísticos en JSON estructurado.
+Eres un extractor de datos de alta precisión para la mayorista de turismo CTB. 
+Tu objetivo es leer el texto de un itinerario en Word y extraer la información REAL siguiendo este esquema JSON. 
 
-ESQUEMA EXTENDIDO:
+REGLAS DE ORO:
+1. NO inventes datos. Si no existe un campo en el texto, déjalo como cadena vacía "".
+2. Extrae el ITINERARIO completo día por día, sin resumir excesivamente.
+3. Extrae PRECIOS si aparecen (Doble, Sencilla, Triple).
+4. El CÓDIGO NEXUS suele tener formato tipo "200526/IST-CLT/ST".
+
+ESQUEMA JSON:
 {
-  "codigo": "Código Nexus (ej: 290426/PTY-CMP/ST)",
-  "nombre": "Nombre comercial del programa",
-  "duracion_label": "Texto duración (ej: 4 Días / 3 Noches)",
+  "codigo": "",
+  "nombre": "",
+  "duracion_label": "",
   "duracion_dias": 0,
   "duracion_noches": 0,
-  "destino_principal": "Ciudad o país principal",
-  "pais_destino": "País",
-  "ciudad_destino": "Ciudad",
-  "vigencia_label": "Vigencia (ej: Ene a Dic 2026)",
-  "incluye": "Servicios incluidos detallados",
-  "no_incluye": "Lo que no incluye",
-  "cortesias_ctb": "Seguro, impuestos, chips, etc.",
-  "notas_importantes": "Condiciones y penalidades",
-  "itinerario": "Itinerario día por día detallado",
-  "politica_ninos": "Edades y condiciones para niños",
-  "hoteles_previstos": "Lista de hoteles mencionados",
+  "tipo_operacion": "",
+  "destino_principal": "",
+  "pais_destino": "",
+  "ciudad_destino": "",
+  "vigencia_label": "",
+  "incluye": "",
+  "no_incluye": "",
+  "cortesias_ctb": "",
+  "notas_importantes": "",
+  "itinerario": "",
+  "hoteles_previstos": "",
+  "politica_ninos": "",
   "precio_doble": 0,
-  "moneda": "USD",
-  "status": "borrador"
+  "precio_sencillo": 0,
+  "precio_triple": 0,
+  "moneda": "USD"
 }
-
-REGLAS:
-- Si el texto dice "3 noches", pon 3 en duracion_noches.
-- Extrae TODO el itinerario, no lo resumas demasiado.
-- En cortesias_ctb busca seguros de viaje o bonos.
-- Devuelve solo JSON.
 `;
 
 export const extractProgramData = async (text) => {
   try {
+    console.log("Enviando texto a OpenAI para extracción (Longitud:", text.length, "caracteres)");
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: `Extrae la información de este programa:\n\n${text}` }
+        { role: "user", content: `Analiza este texto y extrae el JSON:\n\n${text}` }
       ],
-      response_format: { type: "json_object" },
       temperature: 0,
+      response_format: { type: "json_object" }
     });
 
-    return JSON.parse(response.choices[0].message.content);
+    const result = JSON.parse(response.choices[0].message.content);
+    console.log("Resultado de la IA:", result);
+    return result;
   } catch (error) {
-    console.error("Error en extracción IA:", error);
+    console.error("Error crítico en extractProgramData:", error);
     throw error;
   }
 };
