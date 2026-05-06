@@ -8,7 +8,8 @@ import {
   Star, 
   Share2, 
   Download,
-  Info
+  Info,
+  Layers
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 
