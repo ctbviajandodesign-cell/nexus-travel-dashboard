@@ -9,7 +9,9 @@ import {
   Share2, 
   Download,
   Info,
-  Layers
+  Layers,
+  AlertCircle,
+  Plane
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 
@@ -72,6 +74,17 @@ const ProgramDetail = ({ program, onBack }) => {
                   <Calendar size={18} className="text-accent-gold" />
                   <span className="text-sm font-bold">{program.duracion_label || program.duracion}</span>
                 </div>
+                {program.ciudad_salida && (
+                  <div className="flex items-center gap-2">
+                    <Plane size={18} className="text-accent-gold" />
+                    <span className="text-sm font-bold">Salida desde {program.ciudad_salida} ({program.aeropuerto_salida})</span>
+                  </div>
+                )}
+                {program.aerolinea && (
+                  <div className="px-3 py-1 rounded-full bg-white/10 border border-white/10 text-[10px] font-black uppercase tracking-widest">
+                    Vía {program.aerolinea}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -153,6 +166,29 @@ const ProgramDetail = ({ program, onBack }) => {
                       </div>
                     ))}
                   </div>
+                </div>
+
+                {/* Notas Importantes */}
+                <div className="card glass !bg-white/[0.01]">
+                   <h4 className="text-[12px] font-black uppercase tracking-widest text-accent-gold mb-4">Notas Importantes</h4>
+                   <div className="space-y-3">
+                    {(program.notas_importantes || '').split('\n').map((item, i) => item.trim() && (
+                      <div key={i} className="flex items-start gap-3">
+                        <AlertCircle size={16} className="text-accent-gold/60 shrink-0 mt-0.5" />
+                        <span className="text-sm text-white/70 leading-relaxed italic">{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Feriados y Suplementos */}
+                <div className="card glass !bg-white/[0.01]">
+                   <h4 className="text-[12px] font-black uppercase tracking-widest text-accent-gold mb-4">Feriados y Suplementos</h4>
+                   <p className="text-sm text-white/70 leading-relaxed whitespace-pre-wrap">
+                      {program.feriados || 'No se registran feriados especiales.'}
+                   </p>
                 </div>
 
                 {/* Hoteles / Niños */}
