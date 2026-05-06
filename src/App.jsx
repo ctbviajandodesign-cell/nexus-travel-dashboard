@@ -522,6 +522,7 @@ function App() {
                     notas_importantes:   newData.notas_importantes,
                     politicas_cancelacion: newData.politicas_cancelacion,
                     condiciones_especiales: newData.condiciones_especiales,
+                    info_tecnica_adicional: newData.info_tecnica_adicional,
                     feriados:            newData.feriados,
                     itinerario:          newData.itinerario,
                     hoteles_previstos:   newData.hoteles_previstos,

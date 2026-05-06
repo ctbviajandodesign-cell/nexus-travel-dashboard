@@ -186,7 +186,14 @@ const ProgramDetail = ({ program, onBack }) => {
           <DetailSection icon={Info} title="Notas Adicionales" color="text-white/40">
              <div className="text-xs text-white/50 leading-relaxed whitespace-pre-wrap">{program.notas_importantes}</div>
           </DetailSection>
-          
+
+          {program.info_tecnica_adicional && (
+            <DetailSection icon={Layers} title="Detalles Técnicos Extra" color="text-accent-gold/40">
+               <div className="text-[11px] text-white/40 leading-relaxed whitespace-pre-wrap italic">
+                  {program.info_tecnica_adicional}
+               </div>
+            </DetailSection>
+          )}
         </div>
       </div>
     </motion.div>

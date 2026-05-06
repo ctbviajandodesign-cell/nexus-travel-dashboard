@@ -176,6 +176,7 @@ const ValidationScreen = ({ programData, onSave, onCancel }) => {
                   />
                 <ValidationField label="Feriados / Suplementos" value={formData.feriados} onChange={(v) => setFormData({...formData, feriados: v})} type="textarea" />
                 <ValidationField label="Condiciones Especiales" value={formData.condiciones_especiales} onChange={(v) => setFormData({...formData, condiciones_especiales: v})} type="textarea" />
+                <ValidationField label="Información Técnica Adicional (Cajón de Sastre)" value={formData.info_tecnica_adicional} onChange={(v) => setFormData({...formData, info_tecnica_adicional: v})} type="textarea" />
               </div>
             </section>
           </div>
