@@ -494,6 +494,8 @@ function App() {
                     aeropuerto_salida:   newData.aeropuerto_salida,
                     ciudad_salida:       newData.ciudad_salida,
                     aerolinea:           newData.aerolinea,
+                    politica_equipaje:   newData.politica_equipaje,
+                    comision:            newData.comision,
                     vigencia_label:      newData.vigencia_label,
                     incluye:             newData.incluye,
                     no_incluye:          newData.no_incluye,

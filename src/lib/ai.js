@@ -9,24 +9,21 @@ const SYSTEM_PROMPT = `
 Eres un transcriptor de itinerarios turísticos para CTB Mayorista de Ecuador. 
 Tu misión es TRANSCRIBIR el contenido del documento Word al JSON sin resumir NADA.
 
-REGLAS DE ORO:
+REGLAS DE EXTRACCIÓN:
 
-1. ITINERARIO (CRÍTICO): 
-   - Busca bloques que empiecen con "DIA X", "DÍA X", "DIA 0X", etc.
-   - DEBES extraer TODOS los días. Si el documento tiene 4 días y solo extraes 2, es un fallo crítico.
-   - Copia el texto COMPLETO de cada día.
+1. LOGÍSTICA AÉREA: 
+   - Busca "GYE" o "UIO" para ciudad_salida y aeropuerto_salida.
+   - Busca "VIA LATAM", "VIA AVIANCA", etc. para aerolinea.
+   - Busca "FAREBASIS" y detalles de "EQUIPAJE" (23kg, mano, etc.) para politica_equipaje.
 
-2. NOTAS IMPORTANTES:
-   - Transcribe TODO el texto que aparezca bajo esta sección. No importa si es muy largo. Copia literal punto por punto.
+2. FINANZAS:
+   - Busca "COMISIÓN FIJA" para extraer el valor en el campo comision.
 
-3. CIUDAD DE SALIDA Y AEROPUERTO:
-   - Busca en el texto patrones como "GYE" (Guayaquil) o "UIO" (Quito).
-   - Si dice "Boleto aéreo GYE", pon ciudad_salida: "Guayaquil" y aeropuerto_salida: "GYE".
+3. ITINERARIO:
+   - Copia ÍNTEGRAMENTE cada día (DIA 1, DIA 2, etc.). NO resumas.
 
-4. FERIADOS:
-   - Si hay una sección de "FERIADOS", transcribe la lista completa de fechas.
-
-5. PRECIOS: Los precios NO se extraen aquí.
+4. NOTAS Y FERIADOS:
+   - Transcribe TODA la sección de "NOTAS IMPORTANTES" y "FERIADOS".
 
 ESQUEMA JSON:
 {
@@ -40,13 +37,15 @@ ESQUEMA JSON:
   "aeropuerto_salida": "",
   "ciudad_salida": "",
   "aerolinea": "",
+  "politica_equipaje": "",
+  "comision": "",
   "vigencia_label": "",
   "incluye": "",
   "no_incluye": "",
   "cortesias_ctb": "",
   "notas_importantes": "",
   "feriados": "",
-  "itinerario_lista": ["DIA 1: ...", "DIA 2: ..."],
+  "itinerario_lista": [],
   "hoteles_previstos": "",
   "politica_ninos": ""
 }
@@ -58,7 +57,7 @@ export const extractProgramData = async (text) => {
       model: "gpt-4o",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: `Transcribe este documento ÍNTEGRAMENTE. No omitas ningún día del itinerario ni ninguna nota importante:\n\n${text}` }
+        { role: "user", content: `Transcribe este documento sin omitir nada. Captura la comisión, equipaje, itinerario completo y todas las notas:\n\n${text}` }
       ],
       temperature: 0,
       max_tokens: 16000,
@@ -66,11 +65,9 @@ export const extractProgramData = async (text) => {
     });
 
     const data = JSON.parse(response.choices[0].message.content);
-
     if (data.itinerario_lista && Array.isArray(data.itinerario_lista)) {
       data.itinerario = data.itinerario_lista.join('\n\n');
     }
-
     return data;
   } catch (error) {
     console.error("Error en extracción:", error);

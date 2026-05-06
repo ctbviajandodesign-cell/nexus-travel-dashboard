@@ -193,15 +193,20 @@ const ProgramDetail = ({ program, onBack }) => {
 
                 {/* Hoteles / Niños */}
                 <div className="card glass !bg-white/[0.01]">
-                   <h4 className="text-[12px] font-black uppercase tracking-widest text-text-muted mb-4">Políticas y Hoteles</h4>
-                   <div className="space-y-4">
-                      <div>
-                         <p className="text-[10px] font-bold text-accent-gold uppercase mb-1">Hoteles Previstos</p>
-                         <p className="text-sm text-white/80">{program.hoteles_previstos || 'Consultar'}</p>
+                   <div className="mb-8">
+                      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-text-muted mb-4">Comisión Referencial</p>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-3xl font-black text-accent-gold">{program.comision || 'Ver notas'}</span>
                       </div>
+                   </div>
+                   <div className="mb-8">
                       <div>
                          <p className="text-[10px] font-bold text-accent-gold uppercase mb-1">Política de Niños</p>
                          <p className="text-xs text-white/60 leading-relaxed">{program.politica_ninos || 'No especificada'}</p>
+                      </div>
+                      <div className="pt-2 border-t border-white/5">
+                         <p className="text-[10px] font-bold text-blue-400 uppercase mb-1">Equipaje / Farebasis</p>
+                         <p className="text-xs text-white/60 leading-relaxed">{program.politica_equipaje || 'Consultar'}</p>
                       </div>
                    </div>
                 </div>
