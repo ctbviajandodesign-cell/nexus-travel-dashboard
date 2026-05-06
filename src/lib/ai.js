@@ -10,8 +10,8 @@ Eres un extractor de datos de alta precisión para CTB Mayorista.
 Recibirás el contenido de un itinerario en formato HTML. Tu misión es convertirlo en JSON.
 
 REGLAS CRÍTICAS:
-1. DURACIÓN: Cuenta físicamente cuántos días aparecen en el itinerario (Día 1, Día 2...). Pon ese número en "duracion_dias" y (días - 1) en "duracion_noches".
-2. ITINERARIO: Extrae el texto COMPLETO de cada día. No resumas. 
+1. DURACIÓN: Cuenta físicamente cuántos días aparecen en el itinerario (Día 1, Día 2...). Pon ese número en "duracion_dias" y (días - 1) en "duracion_noches". Es inaceptable omitir días.
+2. ITINERARIO: Extrae el texto INTEGRO de cada día. NO RESUMAS. Cada día debe empezar con "Día X:". Si el documento tiene 10 días, el JSON debe tener los 10 días.
 3. CIUDADES: Lista todas las ciudades mencionadas en el itinerario separadas por comas en "ciudad_destino".
 4. PRECIOS: Busca tablas de precios y extrae los valores para Sencilla, Doble y Triple.
 5. NO inventes datos. Si no existe, "".
@@ -49,9 +49,10 @@ export const extractProgramData = async (text) => {
       model: "gpt-4o-mini",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: `Analiza este texto y extrae el JSON:\n\n${text}` }
+        { role: "user", content: `Analiza este texto y extrae el JSON. ES CRÍTICO QUE EL ITINERARIO ESTÉ COMPLETO DÍA POR DÍA. NO RESUMAS:\n\n${text}` }
       ],
       temperature: 0,
+      max_tokens: 4000,
       response_format: { type: "json_object" }
     });
 
