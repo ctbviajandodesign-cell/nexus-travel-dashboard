@@ -14,31 +14,42 @@ import {
   Info,
   Plane,
   Briefcase,
-  ShieldCheck
+  ShieldCheck,
+  Phone,
+  FileText,
+  Users,
+  Compass
 } from 'lucide-react';
 
-const ValidationField = ({ label, value, onChange, type = 'text', icon: Icon, isTextArea = false }) => (
+const ValidationField = ({ label, value, onChange, type = 'text', icon: Icon }) => (
   <div className="space-y-1.5 group">
-    <label className="text-[10px] font-black uppercase tracking-wider text-white/40 group-focus-within:text-accent-gold transition-colors flex items-center gap-1.5">
-      {Icon && <Icon size={12} className="text-accent-gold/50" />}
+    <label className="text-[10px] font-black uppercase tracking-wider text-white/30 group-focus-within:text-accent-gold transition-colors flex items-center gap-1.5">
+      {Icon && <Icon size={12} className="text-accent-gold/40" />}
       {label}
     </label>
     {type === 'textarea' ? (
       <textarea
         value={value || ''}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-white/[0.02] border border-white/10 rounded-xl px-4 py-4 text-[13px] text-white/90 focus:outline-none focus:border-accent-gold/50 focus:bg-white/[0.04] transition-all min-h-[150px] resize-y font-medium leading-relaxed"
-        placeholder={`Ingrese ${label.toLowerCase()}...`}
+        className="w-full bg-white/[0.02] border border-white/10 rounded-xl px-4 py-4 text-[13px] text-white/90 focus:outline-none focus:border-accent-gold/50 focus:bg-white/[0.04] transition-all min-h-[120px] resize-y font-medium leading-relaxed"
       />
     ) : (
       <input
         type={type}
         value={value || ''}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-white/[0.02] border border-white/10 rounded-xl px-4 h-12 text-[13px] text-white/90 focus:outline-none focus:border-accent-gold/50 focus:bg-white/[0.04] transition-all font-medium"
-        placeholder={`Ingrese ${label.toLowerCase()}...`}
+        className="w-full bg-white/[0.02] border border-white/10 rounded-xl px-4 h-11 text-[13px] text-white/90 focus:outline-none focus:border-accent-gold/50 focus:bg-white/[0.04] transition-all font-medium"
       />
     )}
+  </div>
+);
+
+const SectionHeader = ({ icon: Icon, title, color = "text-accent-gold" }) => (
+  <div className="flex items-center gap-3 border-b border-white/5 pb-4 mb-6">
+    <div className={`w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center`}>
+      <Icon size={18} className={color} />
+    </div>
+    <h3 className="text-[15px] font-black tracking-tight uppercase">{title}</h3>
   </div>
 );
 
@@ -55,242 +66,110 @@ const ValidationScreen = ({ programData, onSave, onCancel }) => {
 
   return (
     <div className="min-h-screen bg-[#050505] text-white pb-32">
-      {/* HEADER PREMIUM */}
+      {/* HEADER */}
       <div className="sticky top-0 z-50 bg-[#050505]/90 backdrop-blur-2xl border-b border-white/5">
-        <div className="max-w-[1400px] mx-auto px-8 h-24 flex items-center justify-between">
+        <div className="max-w-[1500px] mx-auto px-8 h-20 flex items-center justify-between">
           <div className="flex items-center gap-6">
-            <button 
-              onClick={onCancel}
-              className="p-3 hover:bg-white/5 rounded-2xl transition-colors text-white/40 hover:text-white border border-transparent hover:border-white/10"
-            >
-              <ArrowLeft size={22} />
+            <button onClick={onCancel} className="p-2.5 hover:bg-white/5 rounded-xl transition-colors text-white/40">
+              <ArrowLeft size={20} />
             </button>
             <div>
-              <h2 className="text-[22px] font-black tracking-tight text-white/90">Validar Extracción</h2>
-              <p className="text-[11px] text-accent-gold uppercase tracking-[0.2em] font-black">Nexus AI Engine v2.5</p>
+              <h2 className="text-[18px] font-black tracking-tight">Validación Maestra</h2>
+              <p className="text-[10px] text-accent-gold uppercase tracking-[0.2em] font-black">Control de Calidad Nexus</p>
             </div>
           </div>
-          
           <div className="flex items-center gap-4">
-            <button 
-              onClick={onCancel}
-              className="px-6 h-12 rounded-xl text-[13px] font-black text-white/40 hover:text-white transition-all"
-            >
-              DESCARTAR
-            </button>
-            <button 
-              onClick={handleSave}
-              className="px-8 h-12 rounded-xl bg-accent-gold text-black text-[13px] font-black flex items-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-[0_0_30px_rgba(212,175,55,0.2)]"
-            >
-              <Save size={18} />
-              CONFIRMAR Y GUARDAR EN CATÁLOGO
+            <button onClick={onCancel} className="px-6 h-11 rounded-xl text-[12px] font-black text-white/40 hover:text-white">DESCARTAR</button>
+            <button onClick={handleSave} className="px-8 h-11 rounded-xl bg-accent-gold text-black text-[12px] font-black flex items-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-accent-gold/20">
+              <Save size={16} /> CONFIRMAR Y GUARDAR
             </button>
           </div>
         </div>
       </div>
 
-      <main className="max-w-[1400px] mx-auto px-8 mt-12">
-        <div className="grid grid-cols-12 gap-10">
+      <main className="max-w-[1500px] mx-auto px-8 mt-10">
+        <div className="grid grid-cols-12 gap-8">
           
-          {/* COLUMNA IZQUIERDA: DATOS MAESTROS */}
+          {/* COLUMNA 1: GENERAL & VUELOS */}
           <div className="col-span-12 lg:col-span-4 space-y-8">
-            <section className="card bg-white/[0.02] border-white/5 p-8 rounded-[32px] space-y-8">
-              <div className="flex items-center gap-3 border-b border-white/5 pb-6">
-                <div className="w-10 h-10 rounded-xl bg-accent-gold/10 flex items-center justify-center">
-                  <Info size={20} className="text-accent-gold" />
-                </div>
-                <h3 className="text-lg font-black tracking-tight">Información Base</h3>
-              </div>
-
-              <div className="space-y-6">
-                <ValidationField 
-                  label="Nombre del Programa" 
-                  value={formData.nombre} 
-                  onChange={(v) => setFormData({...formData, nombre: v})}
-                  icon={Layers}
-                />
+            <section className="card bg-white/[0.01] border-white/5 p-8 rounded-3xl">
+              <SectionHeader icon={Info} title="Datos Generales" />
+              <div className="space-y-5">
+                <ValidationField label="Nombre del Programa" value={formData.nombre} onChange={(v) => setFormData({...formData, nombre: v})} icon={Layers} />
                 <div className="grid grid-cols-2 gap-4">
-                  <ValidationField 
-                    label="Código Nexus" 
-                    value={formData.codigo} 
-                    onChange={(v) => setFormData({...formData, codigo: v})}
-                    icon={CheckCircle2}
-                  />
-                  <ValidationField 
-                    label="Operación" 
-                    value={formData.tipo_operacion} 
-                    onChange={(v) => setFormData({...formData, tipo_operacion: v})}
-                    icon={Briefcase}
-                  />
+                  <ValidationField label="Código" value={formData.codigo} onChange={(v) => setFormData({...formData, codigo: v})} icon={CheckCircle2} />
+                  <ValidationField label="País" value={formData.pais_destino} onChange={(v) => setFormData({...formData, pais_destino: v})} icon={MapPin} />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <ValidationField 
-                    label="Días" 
-                    value={formData.duracion_dias} 
-                    onChange={(v) => setFormData({...formData, duracion_dias: v})}
-                    icon={Calendar}
-                  />
-                  <ValidationField 
-                    label="Noches" 
-                    value={formData.duracion_noches} 
-                    onChange={(v) => setFormData({...formData, duracion_noches: v})}
-                    icon={Clock}
-                  />
+                  <ValidationField label="Días" value={formData.duracion_dias} onChange={(v) => setFormData({...formData, duracion_dias: v})} icon={Calendar} />
+                  <ValidationField label="Noches" value={formData.duracion_noches} onChange={(v) => setFormData({...formData, duracion_noches: v})} icon={Clock} />
                 </div>
-                <ValidationField 
-                  label="Vigencia / Temporadas" 
-                  value={formData.vigencia_label} 
-                  onChange={(v) => setFormData({...formData, vigencia_label: v})}
-                  icon={Calendar}
-                />
+                <ValidationField label="Vigencia General" value={formData.vigencia_label} onChange={(v) => setFormData({...formData, vigencia_label: v})} icon={Calendar} />
+                <ValidationField label="Fechas Específicas / Salidas" value={formData.salidas_especificas} onChange={(v) => setFormData({...formData, salidas_especificas: v})} icon={Calendar} type="textarea" />
               </div>
             </section>
 
-            <section className="card bg-white/[0.02] border-white/5 p-8 rounded-[32px] space-y-8">
-              <div className="flex items-center gap-3 border-b border-white/5 pb-6">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                  <Plane size={20} className="text-blue-400" />
-                </div>
-                <h3 className="text-lg font-black tracking-tight">Logística Aérea</h3>
-              </div>
-
-              <div className="space-y-6">
+            <section className="card bg-white/[0.01] border-white/5 p-8 rounded-3xl">
+              <SectionHeader icon={Plane} title="Logística Aérea" color="text-blue-400" />
+              <div className="space-y-5">
                 <div className="grid grid-cols-2 gap-4">
-                  <ValidationField 
-                    label="Ciudad Salida" 
-                    value={formData.ciudad_salida} 
-                    onChange={(v) => setFormData({...formData, ciudad_salida: v})}
-                    icon={MapPin}
-                  />
-                  <ValidationField 
-                    label="Aero (IATA)" 
-                    value={formData.aeropuerto_salida} 
-                    onChange={(v) => setFormData({...formData, aeropuerto_salida: v})}
-                    icon={Plane}
-                  />
+                  <ValidationField label="Ciudad Salida" value={formData.ciudad_salida} onChange={(v) => setFormData({...formData, ciudad_salida: v})} icon={MapPin} />
+                  <ValidationField label="IATA" value={formData.aeropuerto_salida} onChange={(v) => setFormData({...formData, aeropuerto_salida: v})} icon={Plane} />
                 </div>
-                <ValidationField 
-                  label="Aerolínea" 
-                  value={formData.aerolinea} 
-                  onChange={(v) => setFormData({...formData, aerolinea: v})}
-                  icon={Layers}
-                />
-                <ValidationField 
-                  label="Política Equipaje / Farebasis" 
-                  value={formData.politica_equipaje} 
-                  onChange={(v) => setFormData({...formData, politica_equipaje: v})}
-                  icon={Briefcase}
-                />
-              </div>
-            </section>
-
-            <section className="card bg-white/[0.02] border-white/5 p-8 rounded-[32px] space-y-8">
-              <div className="flex items-center gap-3 border-b border-white/5 pb-6">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                  <DollarSign size={20} className="text-emerald-400" />
-                </div>
-                <h3 className="text-lg font-black tracking-tight">Finanzas Referenciales</h3>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <ValidationField label="Sencilla" value={formData.precio_sencillo} onChange={(v) => setFormData({...formData, precio_sencillo: v})} type="number" />
-                <ValidationField label="Doble" value={formData.precio_doble} onChange={(v) => setFormData({...formData, precio_doble: v})} type="number" />
-                <ValidationField label="Triple" value={formData.precio_triple} onChange={(v) => setFormData({...formData, precio_triple: v})} type="number" />
-                <ValidationField label="Comisión" value={formData.comision} onChange={(v) => setFormData({...formData, comision: v})} icon={DollarSign} />
+                <ValidationField label="Aerolínea" value={formData.aerolinea} onChange={(v) => setFormData({...formData, aerolinea: v})} icon={Layers} />
+                <ValidationField label="Equipaje / Farebasis" value={formData.politica_equipaje} onChange={(v) => setFormData({...formData, politica_equipaje: v})} icon={Briefcase} />
+                <ValidationField label="Info Traslados (Llegada)" value={formData.informacion_traslados} onChange={(v) => setFormData({...formData, informacion_traslados: v})} icon={Clock} type="textarea" />
+                <ValidationField label="Puntos de Encuentro" value={formData.punto_encuentro} onChange={(v) => setFormData({...formData, punto_encuentro: v})} icon={MapPin} type="textarea" />
               </div>
             </section>
           </div>
 
-          {/* COLUMNA DERECHA: TEXTOS LARGOS */}
-          <div className="col-span-12 lg:col-span-8 space-y-8">
-            
-            <section className="card bg-white/[0.02] border-white/5 p-10 rounded-[32px] space-y-8">
-              <div className="flex items-center gap-3 border-b border-white/5 pb-6">
-                <div className="w-10 h-10 rounded-xl bg-accent-gold/10 flex items-center justify-center">
-                  <Clock size={20} className="text-accent-gold" />
+          {/* COLUMNA 2: REQUISITOS & SERVICIOS */}
+          <div className="col-span-12 lg:col-span-4 space-y-8">
+            <section className="card bg-white/[0.01] border-white/5 p-8 rounded-3xl">
+              <SectionHeader icon={ShieldCheck} title="Requisitos y Finanzas" color="text-emerald-400" />
+              <div className="space-y-5">
+                <div className="grid grid-cols-2 gap-4">
+                   <ValidationField label="Comisión" value={formData.comision} onChange={(v) => setFormData({...formData, comision: v})} icon={DollarSign} />
+                   <ValidationField label="Bono Counter" value={formData.bono_counter} onChange={(v) => setFormData({...formData, bono_counter: v})} icon={DollarSign} />
                 </div>
-                <h3 className="text-lg font-black tracking-tight">Itinerario y Hoteles</h3>
-              </div>
-              
-              <div className="space-y-8">
-                <ValidationField 
-                  label="Itinerario Detallado (Día a Día)" 
-                  value={formData.itinerario} 
-                  onChange={(v) => setFormData({...formData, itinerario: v})}
-                  type="textarea"
-                />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <ValidationField 
-                    label="Hoteles Previstos" 
-                    value={formData.hoteles_previstos} 
-                    onChange={(v) => setFormData({...formData, hoteles_previstos: v})}
-                    type="textarea"
-                  />
-                  <ValidationField 
-                    label="Política de Niños" 
-                    value={formData.politica_ninos} 
-                    onChange={(v) => setFormData({...formData, politica_ninos: v})}
-                    type="textarea"
-                  />
-                </div>
+                <ValidationField label="Mínimo Pax" value={formData.minimo_pax} onChange={(v) => setFormData({...formData, minimo_pax: v})} icon={Users} />
+                <ValidationField label="Documentación (Visas/Vacunas)" value={formData.documentacion_requisitos} onChange={(v) => setFormData({...formData, documentacion_requisitos: v})} icon={FileText} type="textarea" />
+                <ValidationField label="Seguro de Viaje" value={formData.seguro_viaje} onChange={(v) => setFormData({...formData, seguro_viaje: v})} icon={ShieldCheck} />
+                <ValidationField label="Teléfono Emergencia" value={formData.telefono_emergencia} onChange={(v) => setFormData({...formData, telefono_emergencia: v})} icon={Phone} />
               </div>
             </section>
 
-            <section className="card bg-white/[0.02] border-white/5 p-10 rounded-[32px] space-y-8">
-              <div className="flex items-center gap-3 border-b border-white/5 pb-6">
-                <div className="w-10 h-10 rounded-xl bg-accent-gold/10 flex items-center justify-center">
-                  <ShieldCheck size={20} className="text-accent-gold" />
-                </div>
-                <h3 className="text-lg font-black tracking-tight">Servicios, Notas y Feriados</h3>
-              </div>
-              
-              <div className="space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <ValidationField 
-                    label="El Programa Incluye" 
-                    value={formData.incluye} 
-                    onChange={(v) => setFormData({...formData, incluye: v})}
-                    type="textarea"
-                  />
-                  <ValidationField 
-                    label="No Incluye" 
-                    value={formData.no_incluye} 
-                    onChange={(v) => setFormData({...formData, no_incluye: v})}
-                    type="textarea"
-                  />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <ValidationField 
-                    label="Notas Importantes" 
-                    value={formData.notas_importantes} 
-                    onChange={(v) => setFormData({...formData, notas_importantes: v})}
-                    type="textarea"
-                  />
-                  <ValidationField 
-                    label="Políticas de Cancelación" 
-                    value={formData.politicas_cancelacion} 
-                    onChange={(v) => setFormData({...formData, politicas_cancelacion: v})}
-                    type="textarea"
-                  />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <ValidationField 
-                    label="Condiciones Especiales (Impuestos, etc.)" 
-                    value={formData.condiciones_especiales} 
-                    onChange={(v) => setFormData({...formData, condiciones_especiales: v})}
-                    type="textarea"
-                  />
-                  <ValidationField 
-                    label="Feriados Especiales / Suplementos" 
-                    value={formData.feriados} 
-                    onChange={(v) => setFormData({...formData, feriados: v})}
-                    type="textarea"
-                  />
-                </div>
+            <section className="card bg-white/[0.01] border-white/5 p-8 rounded-3xl">
+              <SectionHeader icon={Compass} title="Servicios y Hoteles" color="text-purple-400" />
+              <div className="space-y-5">
+                <ValidationField label="Incluye" value={formData.incluye} onChange={(v) => setFormData({...formData, incluye: v})} type="textarea" />
+                <ValidationField label="No Incluye" value={formData.no_incluye} onChange={(v) => setFormData({...formData, no_incluye: v})} type="textarea" />
+                <ValidationField label="Hoteles Previstos" value={formData.hoteles_previstos} onChange={(v) => setFormData({...formData, hoteles_previstos: v})} type="textarea" />
+                <ValidationField label="Notas Habitación (Camas/Triples)" value={formData.notas_habitacion} onChange={(v) => setFormData({...formData, notas_habitacion: v})} type="textarea" />
               </div>
             </section>
-
           </div>
+
+          {/* COLUMNA 3: ITINERARIO & POLÍTICAS */}
+          <div className="col-span-12 lg:col-span-4 space-y-8">
+            <section className="card bg-white/[0.01] border-white/5 p-8 rounded-3xl">
+              <SectionHeader icon={Clock} title="Itinerario" />
+              <ValidationField label="Itinerario Completo" value={formData.itinerario} onChange={(v) => setFormData({...formData, itinerario: v})} type="textarea" />
+            </section>
+
+            <section className="card bg-white/[0.01] border-white/5 p-8 rounded-3xl">
+              <SectionHeader icon={AlertCircle} title="Políticas y Notas" color="text-rose-400" />
+              <div className="space-y-5">
+                <ValidationField label="Políticas de Cancelación" value={formData.politicas_cancelacion} onChange={(v) => setFormData({...formData, politicas_cancelacion: v})} type="textarea" />
+                <ValidationField label="Notas Importantes" value={formData.notas_importantes} onChange={(v) => setFormData({...formData, notas_importantes: v})} type="textarea" />
+                <ValidationField label="Excursiones Opcionales" value={formData.excursiones_opcionales} onChange={(v) => setFormData({...formData, excursiones_opcionales: v})} type="textarea" />
+                <ValidationField label="Feriados / Suplementos" value={formData.feriados} onChange={(v) => setFormData({...formData, feriados: v})} type="textarea" />
+                <ValidationField label="Condiciones Especiales" value={formData.condiciones_especiales} onChange={(v) => setFormData({...formData, condiciones_especiales: v})} type="textarea" />
+              </div>
+            </section>
+          </div>
+
         </div>
       </main>
     </div>
