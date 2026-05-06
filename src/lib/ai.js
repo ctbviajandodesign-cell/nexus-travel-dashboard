@@ -2,16 +2,16 @@ import OpenAI from 'openai';
 
 const openai = new OpenAI({
   apiKey: import.meta.env.VITE_OPENAI_API_KEY,
-  dangerouslyAllowBrowser: true // Solo para desarrollo/demo privada
+  dangerouslyAllowBrowser: true
 });
 
 const SYSTEM_PROMPT = `
-Eres un transcriptor de datos de alta fidelidad para CTB Mayorista. Tu misión es TRANSCRIBIR el contenido de itinerarios turísticos sin omitir información.
+Eres un transcriptor de datos para CTB Mayorista. COPIA el contenido del documento al JSON sin resumir NADA.
 
-REGLAS DE ORO:
-1. ITINERARIO: Extrae el itinerario como una LISTA DE DÍAS. Cada elemento de la lista debe ser el contenido ÍNTEGRO de ese día. NO RESUMAS. Si el documento dice 500 palabras para el Día 1, transcribe las 500 palabras.
-2. PRECIOS: Busca tablas y extrae los valores numéricos para Sencilla, Doble y Triple.
-3. CIUDADES: Identifica todas las ciudades visitadas.
+REGLAS:
+1. ITINERARIO: Copia LITERALMENTE cada día completo en la lista. Si hay 10 días, el array debe tener 10 elementos con el texto COMPLETO de cada día.
+2. PRECIOS: Extrae valores numéricos de Sencilla, Doble y Triple.
+3. No resumas, no parafrasees, no omitas texto.
 
 ESQUEMA JSON:
 {
@@ -29,7 +29,7 @@ ESQUEMA JSON:
   "no_incluye": "",
   "cortesias_ctb": "",
   "notas_importantes": "",
-  "itinerario_lista": ["Día 1: ...", "Día 2: ..."],
+  "itinerario_lista": ["Día 1: texto completo...", "Día 2: texto completo..."],
   "hoteles_previstos": "",
   "politica_ninos": "",
   "precio_doble": 0,
@@ -41,29 +41,29 @@ ESQUEMA JSON:
 
 export const extractProgramData = async (text) => {
   try {
-    console.log("Iniciando transcripción con GPT-4o...");
+    console.log("Iniciando transcripción GPT-4o. Longitud del documento:", text.length, "caracteres");
     const response = await openai.chat.completions.create({
-      model: "gpt-4o", // Usamos el modelo más potente para evitar resúmenes
+      model: "gpt-4o",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: `Transcribe íntegramente este itinerario al formato JSON:\n\n${text}` }
+        { role: "user", content: `Copia este documento al JSON. NO RESUMIR el itinerario:\n\n${text}` }
       ],
       temperature: 0,
-      max_tokens: 4000,
+      max_tokens: 16000,
       response_format: { type: "json_object" }
     });
 
     const data = JSON.parse(response.choices[0].message.content);
-    
-    // Convertimos la lista de vuelta a string para que el Dashboard no falle
-    if (data.itinerario_lista) {
+
+    if (data.itinerario_lista && Array.isArray(data.itinerario_lista)) {
       data.itinerario = data.itinerario_lista.join('\n\n');
+      console.log(`✅ Días extraídos correctamente: ${data.itinerario_lista.length}`);
     }
-    
-    console.log("Transcripción completada.");
+
+    console.log("Transcripción completada:", data);
     return data;
   } catch (error) {
-    console.error("Error en motor GPT-4o:", error);
-    throw new Error("Error en la transcripción.");
+    console.error("Error en GPT-4o:", error);
+    throw new Error("Error en la transcripción: " + error.message);
   }
 };
