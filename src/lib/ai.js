@@ -5,29 +5,34 @@ const openai = new OpenAI({
   dangerouslyAllowBrowser: true
 });
 
+// NOTA: Los precios vienen del Excel en Drive, NO del Word.
+// El Word solo aporta el contenido descriptivo del programa.
 const SYSTEM_PROMPT = `
-Eres un transcriptor de datos para CTB Mayorista de Ecuador. Recibirás el texto de un itinerario turístico y debes copiarlo SIN RESUMIR al esquema JSON.
+Eres un transcriptor de itinerarios turísticos para CTB Mayorista de Ecuador.
+Tu única tarea es extraer el CONTENIDO DESCRIPTIVO del documento Word: nombre, código, itinerario, servicios incluidos, notas y hoteles.
+Los precios NO se extraen de este documento, vendrán de otra fuente.
 
-INSTRUCCIONES ESPECÍFICAS:
+INSTRUCCIONES:
 
-1. CÓDIGO: Busca patrones como "COD:", "CÓDIGO:" o combinaciones alfanuméricas como "3103BTSGRUST".
+1. CÓDIGO: Busca "COD:" o patrones alfanuméricos como "3103BTSGRUST" o "200526/IST-CLT/ST".
 
-2. ITINERARIO: El texto tendrá bloques que empiezan con "Día 1", "DÍA 2", etc. Copia el texto COMPLETO de cada bloque en un elemento del array. Si hay 3 días, el array tendrá 3 elementos. Si hay 10 días, tendrá 10 elementos.
+2. DURACIÓN: Busca texto como "10 DÍAS / 9 NOCHES" o "03 DÍAS / 02 NOCHES".
 
-3. PRECIOS: Las tablas Word se convierten en texto plano. El patrón típico es:
-   "HOTEL  SGL  DBL  TPL  NOMBRE_HOTEL  $1.579  $1.099  $954"
-   - El valor después de SGL = precio_sencillo (ej: $1.579 = 1579)
-   - El valor después de DBL = precio_doble (ej: $1.099 = 1099)
-   - El valor después de TPL = precio_triple (ej: $954 = 954)
-   NOTA: Los puntos son separadores de miles, no decimales.
+3. ITINERARIO (MUY IMPORTANTE): 
+   - Busca bloques que empiecen con "Día 1", "DÍA 1", "DÍA 2", etc.
+   - Copia el texto COMPLETO e ÍNTEGRO de cada día en un elemento del array.
+   - Si el documento tiene 11 días, el array debe tener 11 elementos.
+   - NO resumir. NO parafrasear. Copia literal.
 
-4. INCLUYE: Todo lo que esté bajo "PROGRAMA INCLUYE:", "EL PROGRAMA INCLUYE:" o similares.
+4. INCLUYE: Todo lo que esté bajo "PROGRAMA INCLUYE:" o "EL PROGRAMA INCLUYE:".
 
-5. NO INCLUYE: Todo lo que esté bajo "NO INCLUYE:" o similar.
+5. NO INCLUYE: Todo lo que esté bajo "NO INCLUYE:".
 
-6. NOTAS: Todo lo que esté bajo "NOTAS IMPORTANTES:" o similar.
+6. NOTAS: Todo lo que esté bajo "NOTAS IMPORTANTES:".
 
-7. HOTELES: Busca nombres de hoteles en la sección de precios.
+7. HOTELES: Nombres de hoteles mencionados en sección "HOTELES PREVISTOS".
+
+8. CIUDADES: Todas las ciudades visitadas según el itinerario.
 
 ESQUEMA JSON DE SALIDA:
 {
@@ -57,12 +62,12 @@ ESQUEMA JSON DE SALIDA:
 
 export const extractProgramData = async (text) => {
   try {
-    console.log("Iniciando extracción GPT-4o. Longitud:", text.length, "caracteres");
+    console.log("Extrayendo contenido descriptivo del Word. Longitud:", text.length, "chars");
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: `Procesa este itinerario turístico y extrae todos los datos al JSON. NO RESUMIR el itinerario:\n\n${text}` }
+        { role: "user", content: `Extrae el contenido de este itinerario. COPIA el itinerario día por día SIN RESUMIR:\n\n${text}` }
       ],
       temperature: 0,
       max_tokens: 16000,
@@ -71,16 +76,16 @@ export const extractProgramData = async (text) => {
 
     const data = JSON.parse(response.choices[0].message.content);
 
-    // Unir lista de días en un solo string para el campo itinerario
+    // Unir lista de días en un solo texto para el campo itinerario
     if (data.itinerario_lista && Array.isArray(data.itinerario_lista)) {
       data.itinerario = data.itinerario_lista.join('\n\n');
       console.log(`✅ Días extraídos: ${data.itinerario_lista.length}`);
     }
 
-    console.log("✅ Extracción completa:", data);
+    console.log("✅ Extracción completada:", data);
     return data;
   } catch (error) {
-    console.error("❌ Error en GPT-4o:", error);
-    throw new Error("Error en la extracción: " + error.message);
+    console.error("❌ Error en extracción:", error);
+    throw new Error("Error procesando el documento: " + error.message);
   }
 };
