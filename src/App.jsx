@@ -470,7 +470,7 @@ function App() {
 
             {view === 'validation' && validatingFile && (
               <ValidationScreen 
-                data={validatingFile.extractedData} 
+                programData={validatingFile.extractedData} 
                 onSave={async (newData) => {
                   if (!newData.codigo) {
                     alert('El código Nexus es obligatorio')
