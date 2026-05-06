@@ -6,16 +6,14 @@ const openai = new OpenAI({
 });
 
 const SYSTEM_PROMPT = `
-Eres un procesador de datos de alta fidelidad para CTB Mayorista. Tu tarea es extraer CADA DETALLE de itinerarios turísticos.
+Eres un transcriptor de datos de alta fidelidad para CTB Mayorista. Tu misión es TRANSCRIBIR el contenido de itinerarios turísticos sin omitir información.
 
-REGLAS DE EXTRACCIÓN (ESTRICTAS):
-1. ITINERARIO: Debes extraer CADA DÍA por separado. Si el documento dice "Día 1" hasta "Día 15", DEBES extraer los 15 días completos. Es un error crítico resumir o agrupar días.
-2. DURACIÓN: Cuenta los días reales del itinerario basándote en los bloques de texto. El número de noches debe ser (Días - 1).
-3. PRECIOS: Busca las palabras "Sencilla", "Doble" y "Triple". Extrae los valores numéricos correspondientes.
-4. CIUDADES: Identifica todas las ciudades visitadas y lístalas separadas por comas.
-5. NO INVENTES: Si un dato no existe, déjalo como "".
+REGLAS DE ORO:
+1. ITINERARIO: Extrae el itinerario como una LISTA DE DÍAS. Cada elemento de la lista debe ser el contenido ÍNTEGRO de ese día. NO RESUMAS. Si el documento dice 500 palabras para el Día 1, transcribe las 500 palabras.
+2. PRECIOS: Busca tablas y extrae los valores numéricos para Sencilla, Doble y Triple.
+3. CIUDADES: Identifica todas las ciudades visitadas.
 
-ESQUEMA DE SALIDA:
+ESQUEMA JSON:
 {
   "codigo": "",
   "nombre": "",
@@ -31,7 +29,7 @@ ESQUEMA DE SALIDA:
   "no_incluye": "",
   "cortesias_ctb": "",
   "notas_importantes": "",
-  "itinerario": "",
+  "itinerario_lista": ["Día 1: ...", "Día 2: ..."],
   "hoteles_previstos": "",
   "politica_ninos": "",
   "precio_doble": 0,
@@ -43,12 +41,12 @@ ESQUEMA DE SALIDA:
 
 export const extractProgramData = async (text) => {
   try {
-    console.log("Iniciando extracción profunda del documento...");
+    console.log("Iniciando transcripción con GPT-4o...");
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "gpt-4o", // Usamos el modelo más potente para evitar resúmenes
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: `Analiza el siguiente itinerario y extrae TODOS los campos. El itinerario debe ser íntegro:\n\n${text}` }
+        { role: "user", content: `Transcribe íntegramente este itinerario al formato JSON:\n\n${text}` }
       ],
       temperature: 0,
       max_tokens: 4000,
@@ -56,10 +54,16 @@ export const extractProgramData = async (text) => {
     });
 
     const data = JSON.parse(response.choices[0].message.content);
-    console.log("Extracción completada:", data);
+    
+    // Convertimos la lista de vuelta a string para que el Dashboard no falle
+    if (data.itinerario_lista) {
+      data.itinerario = data.itinerario_lista.join('\n\n');
+    }
+    
+    console.log("Transcripción completada.");
     return data;
   } catch (error) {
-    console.error("Error en motor de IA:", error);
-    throw new Error("La IA no pudo procesar este documento.");
+    console.error("Error en motor GPT-4o:", error);
+    throw new Error("Error en la transcripción.");
   }
 };
