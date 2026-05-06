@@ -14,11 +14,12 @@ INSTRUCCIONES ESPECÍFICAS:
 
 2. ITINERARIO: El texto tendrá bloques que empiezan con "Día 1", "DÍA 2", etc. Copia el texto COMPLETO de cada bloque en un elemento del array. Si hay 3 días, el array tendrá 3 elementos. Si hay 10 días, tendrá 10 elementos.
 
-3. PRECIOS: Las tablas se convierten en columnas de texto. El patrón es:
-   - SGL o Sencilla = precio_sencillo
-   - DBL o Doble = precio_doble  
-   - TPL o Triple = precio_triple
-   Busca los primeros valores numéricos después de estos encabezados.
+3. PRECIOS: Las tablas Word se convierten en texto plano. El patrón típico es:
+   "HOTEL  SGL  DBL  TPL  NOMBRE_HOTEL  $1.579  $1.099  $954"
+   - El valor después de SGL = precio_sencillo (ej: $1.579 = 1579)
+   - El valor después de DBL = precio_doble (ej: $1.099 = 1099)
+   - El valor después de TPL = precio_triple (ej: $954 = 954)
+   NOTA: Los puntos son separadores de miles, no decimales.
 
 4. INCLUYE: Todo lo que esté bajo "PROGRAMA INCLUYE:", "EL PROGRAMA INCLUYE:" o similares.
 
