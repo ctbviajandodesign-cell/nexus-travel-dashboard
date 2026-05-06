@@ -259,18 +259,34 @@ const ValidationScreen = ({ programData, onSave, onCancel }) => {
                     type="textarea"
                   />
                 </div>
-                <ValidationField 
-                  label="Notas Importantes" 
-                  value={formData.notas_importantes} 
-                  onChange={(v) => setFormData({...formData, notas_importantes: v})}
-                  type="textarea"
-                />
-                <ValidationField 
-                  label="Feriados Especiales / Suplementos" 
-                  value={formData.feriados} 
-                  onChange={(v) => setFormData({...formData, feriados: v})}
-                  type="textarea"
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <ValidationField 
+                    label="Notas Importantes" 
+                    value={formData.notas_importantes} 
+                    onChange={(v) => setFormData({...formData, notas_importantes: v})}
+                    type="textarea"
+                  />
+                  <ValidationField 
+                    label="Políticas de Cancelación" 
+                    value={formData.politicas_cancelacion} 
+                    onChange={(v) => setFormData({...formData, politicas_cancelacion: v})}
+                    type="textarea"
+                  />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <ValidationField 
+                    label="Condiciones Especiales (Impuestos, etc.)" 
+                    value={formData.condiciones_especiales} 
+                    onChange={(v) => setFormData({...formData, condiciones_especiales: v})}
+                    type="textarea"
+                  />
+                  <ValidationField 
+                    label="Feriados Especiales / Suplementos" 
+                    value={formData.feriados} 
+                    onChange={(v) => setFormData({...formData, feriados: v})}
+                    type="textarea"
+                  />
+                </div>
               </div>
             </section>
 

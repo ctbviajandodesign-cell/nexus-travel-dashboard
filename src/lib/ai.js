@@ -9,45 +9,29 @@ const SYSTEM_PROMPT = `
 Eres un transcriptor de itinerarios turísticos para CTB Mayorista de Ecuador. 
 Tu misión es TRANSCRIBIR el contenido del documento Word al JSON sin resumir NADA.
 
-REGLAS DE EXTRACCIÓN:
+REGLAS DE EXTRACCIÓN CRÍTICAS:
 
-1. LOGÍSTICA AÉREA: 
-   - Busca "GYE" o "UIO" para ciudad_salida y aeropuerto_salida.
-   - Busca "VIA LATAM", "VIA AVIANCA", etc. para aerolinea.
-   - Busca "FAREBASIS" y detalles de "EQUIPAJE" (23kg, mano, etc.) para politica_equipaje.
+1. POLÍTICAS DE CANCELACIÓN (NUEVO): 
+   - Busca secciones sobre "Cancelación", "No Show", "Penalidades", "Anulaciones" o "Desistimiento".
+   - Transcribe CUALQUIER REGLA de tiempo o dinero relacionada con cancelar el viaje.
 
-2. FINANZAS:
-   - Busca "COMISIÓN FIJA" para extraer el valor en el campo comision.
+2. CONDICIONES ESPECIALES:
+   - Busca impuestos locales (como Room Tax), propinas obligatorias, o requisitos de visa/vacunas.
 
-3. ITINERARIO:
-   - Copia ÍNTEGRAMENTE cada día (DIA 1, DIA 2, etc.). NO resumas.
+3. LOGÍSTICA AÉREA: 
+   - Captura Ciudad Salida (GYE/UIO), Aero, Aerolínea y Equipaje/Farebasis.
 
-4. NOTAS Y FERIADOS:
-   - Transcribe TODA la sección de "NOTAS IMPORTANTES" y "FERIADOS".
+4. ITINERARIO Y NOTAS:
+   - Copia ÍNTEGRAMENTE cada día y TODA la sección de "NOTAS IMPORTANTES".
 
 ESQUEMA JSON:
 {
-  "codigo": "",
-  "nombre": "",
-  "duracion_label": "",
-  "duracion_dias": 0,
-  "duracion_noches": 0,
-  "pais_destino": "",
-  "ciudad_destino": "",
-  "aeropuerto_salida": "",
-  "ciudad_salida": "",
-  "aerolinea": "",
-  "politica_equipaje": "",
-  "comision": "",
-  "vigencia_label": "",
-  "incluye": "",
-  "no_incluye": "",
-  "cortesias_ctb": "",
-  "notas_importantes": "",
-  "feriados": "",
-  "itinerario_lista": [],
-  "hoteles_previstos": "",
-  "politica_ninos": ""
+  "codigo": "", "nombre": "", "duracion_label": "", "duracion_dias": 0, "duracion_noches": 0,
+  "pais_destino": "", "ciudad_destino": "", "aeropuerto_salida": "", "ciudad_salida": "",
+  "aerolinea": "", "politica_equipaje": "", "comision": "", "vigencia_label": "",
+  "incluye": "", "no_incluye": "", "cortesias_ctb": "", "notas_importantes": "",
+  "politicas_cancelacion": "", "condiciones_especiales": "", "feriados": "",
+  "itinerario_lista": [], "hoteles_previstos": "", "politica_ninos": ""
 }
 `;
 
@@ -57,7 +41,7 @@ export const extractProgramData = async (text) => {
       model: "gpt-4o",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: `Transcribe este documento sin omitir nada. Captura la comisión, equipaje, itinerario completo y todas las notas:\n\n${text}` }
+        { role: "user", content: `Transcribe este documento ÍNTEGRAMENTE. No omitas las políticas de cancelación ni las condiciones especiales:\n\n${text}` }
       ],
       temperature: 0,
       max_tokens: 16000,

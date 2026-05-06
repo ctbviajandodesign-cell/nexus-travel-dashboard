@@ -501,6 +501,8 @@ function App() {
                     no_incluye:          newData.no_incluye,
                     cortesias_ctb:       newData.cortesias_ctb,
                     notas_importantes:   newData.notas_importantes,
+                    politicas_cancelacion: newData.politicas_cancelacion,
+                    condiciones_especiales: newData.condiciones_especiales,
                     feriados:            newData.feriados,
                     itinerario:          newData.itinerario,
                     hoteles_previstos:   newData.hoteles_previstos,

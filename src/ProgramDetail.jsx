@@ -171,14 +171,30 @@ const ProgramDetail = ({ program, onBack }) => {
                 {/* Notas Importantes */}
                 <div className="card glass !bg-white/[0.01]">
                    <h4 className="text-[12px] font-black uppercase tracking-widest text-accent-gold mb-4">Notas Importantes</h4>
-                   <div className="space-y-3">
-                    {(program.notas_importantes || '').split('\n').map((item, i) => item.trim() && (
-                      <div key={i} className="flex items-start gap-3">
-                        <AlertCircle size={16} className="text-accent-gold/60 shrink-0 mt-0.5" />
-                        <span className="text-sm text-white/70 leading-relaxed italic">{item}</span>
-                      </div>
-                    ))}
-                  </div>
+                   <div className="space-y-3 text-sm text-white/70 leading-relaxed italic whitespace-pre-wrap">
+                      {program.notas_importantes}
+                   </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Políticas de Cancelación */}
+                <div className="card glass !bg-rose-500/5 border-rose-500/10">
+                   <h4 className="text-[12px] font-black uppercase tracking-widest text-rose-400 mb-4 flex items-center gap-2">
+                      <AlertCircle size={14} />
+                      Políticas de Cancelación
+                   </h4>
+                   <div className="text-sm text-white/70 leading-relaxed whitespace-pre-wrap">
+                      {program.politicas_cancelacion || 'Sujeto a políticas del operador.'}
+                   </div>
+                </div>
+
+                {/* Condiciones Especiales */}
+                <div className="card glass !bg-blue-500/5 border-blue-500/10">
+                   <h4 className="text-[12px] font-black uppercase tracking-widest text-blue-400 mb-4">Condiciones Especiales</h4>
+                   <div className="text-sm text-white/70 leading-relaxed whitespace-pre-wrap">
+                      {program.condiciones_especiales || 'No se aplican condiciones adicionales.'}
+                   </div>
                 </div>
               </div>
 
