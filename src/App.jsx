@@ -212,15 +212,17 @@ function App() {
       setFiles(prev => [newFile, ...prev])
 
       try {
-        // 1. Extraer texto del Word usando Mammoth
         const arrayBuffer = await file.arrayBuffer()
-        const result = await mammoth.extractRawText({ arrayBuffer })
-        const rawText = result.value
+        // Convertimos a HTML para mantener la estructura de tablas y listas
+        const result = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer })
+        const htmlContent = result.value
+        
+        console.log("Contenido extraído del Word (HTML):", htmlContent.substring(0, 500) + "...")
         
         setFiles(prev => prev.map(f => f.id === newFile.id ? { ...f, progress: 40 } : f))
 
         // 2. Procesar con IA (GPT-4o-mini)
-        const extracted = await extractProgramData(rawText)
+        const extracted = await extractProgramData(htmlContent)
         
         const fileWithData = { 
           ...newFile, 
