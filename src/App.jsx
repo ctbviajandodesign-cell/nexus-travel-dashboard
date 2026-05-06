@@ -532,14 +532,20 @@ function App() {
                       .from('programas')
                       .update(record)
                       .eq('id', validatingFile.id)
-                    if (error) { console.error('Error actualizando:', error); return }
+                    if (error) { 
+                      console.error('Error actualizando:', error); 
+                      alert('Error al actualizar en Supabase: ' + error.message);
+                      return 
+                    }
                   } else {
                     const { error } = await supabase
                       .from('programas')
                       .insert([record])
-                    if (error) { console.error('Error guardando:', error); return }
-
-                     if (error) { console.error('Error guardando:', error); return }
+                    if (error) { 
+                      console.error('Error guardando:', error); 
+                      alert('Error al guardar en Supabase: ' + error.message);
+                      return 
+                    }
                   }
                   await loadPrograms()
                   setView(activeTab === 'inventory' ? 'inventory' : 'dashboard')
