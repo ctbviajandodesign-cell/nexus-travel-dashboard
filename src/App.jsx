@@ -480,6 +480,13 @@ function App() {
                   setFiles(prev => prev.map(f =>
                     f.id === validatingFile.id ? { ...f, status: 'completed', extractedData: newData } : f
                   ))
+                  // Función para limpiar precios (quitar $, comas y espacios)
+                  const cleanNumeric = (val) => {
+                    if (!val) return 0
+                    const cleaned = String(val).replace(/[^\d.-]/g, '')
+                    return parseFloat(cleaned) || 0
+                  }
+
                   // Build Supabase record
                   const record = {
                     codigo:              newData.codigo,
@@ -519,9 +526,9 @@ function App() {
                     itinerario:          newData.itinerario,
                     hoteles_previstos:   newData.hoteles_previstos,
                     politica_ninos:      newData.politica_ninos,
-                    precio_doble:        parseFloat(newData.precio_doble) || 0,
-                    precio_sencillo:     parseFloat(newData.precio_sencillo) || 0,
-                    precio_triple:       parseFloat(newData.precio_triple) || 0,
+                    precio_doble:        cleanNumeric(newData.precio_doble),
+                    precio_sencillo:     cleanNumeric(newData.precio_sencillo),
+                    precio_triple:       cleanNumeric(newData.precio_triple),
                     moneda:              newData.moneda || 'USD',
                     status:              newData.status || 'borrador',
                   }
