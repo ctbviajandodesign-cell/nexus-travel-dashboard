@@ -6,48 +6,31 @@ const openai = new OpenAI({
 });
 
 const SYSTEM_PROMPT = `
-Eres el motor de extracción de datos de CTB Mayorista (Nexus AI). 
-Tu misión es diseccionar el documento Word y extraer CADA detalle logístico en su campo correspondiente.
+Eres el motor de extracción Nexus v3.1 de CTB Mayorista. 
+Tu misión es diseccionar el documento Word con precisión quirúrgica.
 
- CAMPOS LOGÍSTICOS DETALLADOS:
+ REGLAS DE EXTRACCIÓN GEOGRÁFICA:
+1. CIUDAD SALIDA: Detecta GYE (Guayaquil) o UIO (Quito) y su aerolínea.
+2. RUTA COMPLETA:
+   - paises_visitados: Lista todos los países que toca el itinerario (ej: "Francia, Suiza, Italia").
+   - ciudades_visitadas: Lista todas las ciudades donde hay actividad o pernocte (ej: "París, Lucerna, Zúrich, Roma").
 
-1. SALIDAS Y FECHAS:
-   - salidas_especificas: Lista de fechas exactas (ej: "Oct 06, 13, 27").
-   - vigencia_label: Rango general de validez.
+ REGLAS DE ACTIVIDADES:
+3. ACTIVIDADES OPCIONALES: Extrae detalladamente cualquier tour o servicio con costo adicional mencionado (ej: "Vuelo en Globo", "Cena Show", "Mixquic").
 
-2. LOGÍSTICA AÉREA Y TRASLADOS:
-   - aeropuerto_salida / ciudad_salida / aerolinea / politica_equipaje.
-   - informacion_traslados: Instrucciones de llegada (ej: "Esperar en columna 9", "90 min de espera").
-   - punto_encuentro: Para tours compartidos (ej: "Zonas Reforma, Polanco").
-
-3. REQUISITOS Y RESTRICCIONES:
-   - minimo_pax: Número mínimo de pasajeros.
-   - documentacion_requisitos: Visas, vacunas, pasaportes.
-   - seguro_viaje: Detalles del seguro incluido o costo adicional.
-
-4. FINANZAS Y AGENTE:
-   - comision: Valor de la comisión fija.
-   - bono_counter: Incentivo extra (ej: "+$10 de bono").
-
-5. CONTENIDO DESCRIPTIVO:
-   - incluye / no_incluye / cortesias_ctb / itinerario_lista / hoteles_previstos.
-   - notas_habitacion: Detalles de camas o tipos de habitación.
-   - excursiones_opcionales: Tours con costo extra (ej: "Globo", "Cena").
-   - politicas_cancelacion / notas_importantes / feriados / telefono_emergencia.
-
-REGLA DE ORO: Copia literal. No resumas. Si un campo no existe en el documento, déjalo vacío "".
+ REGLAS DE LOGÍSTICA:
+4. Captura ITINERARIO ÍNTEGRO, NOTAS, FERIADOS, EQUIPAJE, COMISIÓN y BONOS.
 
 ESQUEMA JSON:
 {
   "codigo": "", "nombre": "", "duracion_label": "", "duracion_dias": 0, "duracion_noches": 0,
-  "pais_destino": "", "ciudad_destino": "", "aeropuerto_salida": "", "ciudad_salida": "",
-  "aerolinea": "", "politica_equipaje": "", "comision": "", "bono_counter": "",
-  "salidas_especificas": "", "minimo_pax": "", "punto_encuentro": "", "informacion_traslados": "",
-  "documentacion_requisitos": "", "seguro_viaje": "", "telefono_emergencia": "",
-  "incluye": "", "no_incluye": "", "cortesias_ctb": "", "itinerario_lista": [],
-  "hoteles_previstos": "", "notas_habitacion": "", "politica_ninos": "",
-  "excursiones_opcionales": "", "politicas_cancelacion": "", "feriados": "", 
-  "notas_importantes": "", "condiciones_especiales": ""
+  "pais_destino": "", "ciudad_destino": "", 
+  "paises_visitados": "", "ciudades_visitadas": "",
+  "aeropuerto_salida": "", "ciudad_salida": "", "aerolinea": "", "politica_equipaje": "",
+  "comision": "", "bono_counter": "", "salidas_especificas": "", "minimo_pax": "",
+  "incluye": "", "no_incluye": "", "excursiones_opcionales": "", 
+  "itinerario_lista": [], "hoteles_previstos": "", "notas_importantes": "",
+  "politicas_cancelacion": "", "feriados": "", "telefono_emergencia": ""
 }
 `;
 
@@ -57,7 +40,7 @@ export const extractProgramData = async (text) => {
       model: "gpt-4o",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: `Analiza y transcribe este programa minuciosamente. No dejes ningún detalle logístico fuera:\n\n${text}` }
+        { role: "user", content: `Analiza este programa. Identifica la ciudad de salida, todos los países/ciudades visitados y todas las actividades opcionales:\n\n${text}` }
       ],
       temperature: 0,
       max_tokens: 16000,

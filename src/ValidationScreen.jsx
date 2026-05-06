@@ -98,13 +98,18 @@ const ValidationScreen = ({ programData, onSave, onCancel }) => {
                 <ValidationField label="Nombre del Programa" value={formData.nombre} onChange={(v) => setFormData({...formData, nombre: v})} icon={Layers} />
                 <div className="grid grid-cols-2 gap-4">
                   <ValidationField label="Código" value={formData.codigo} onChange={(v) => setFormData({...formData, codigo: v})} icon={CheckCircle2} />
-                  <ValidationField label="País" value={formData.pais_destino} onChange={(v) => setFormData({...formData, pais_destino: v})} icon={MapPin} />
+                  <ValidationField label="País Principal" value={formData.pais_destino} onChange={(v) => setFormData({...formData, pais_destino: v})} icon={MapPin} />
                 </div>
+                <ValidationField label="Ciudad Principal" value={formData.ciudad_destino} onChange={(v) => setFormData({...formData, ciudad_destino: v})} icon={MapPin} />
                 <div className="grid grid-cols-2 gap-4">
                   <ValidationField label="Días" value={formData.duracion_dias} onChange={(v) => setFormData({...formData, duracion_dias: v})} icon={Calendar} />
                   <ValidationField label="Noches" value={formData.duracion_noches} onChange={(v) => setFormData({...formData, duracion_noches: v})} icon={Clock} />
                 </div>
                 <ValidationField label="Vigencia General" value={formData.vigencia_label} onChange={(v) => setFormData({...formData, vigencia_label: v})} icon={Calendar} />
+                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/5">
+                  <ValidationField label="Países en la Ruta" value={formData.paises_visitados} onChange={(v) => setFormData({...formData, paises_visitados: v})} icon={MapPin} />
+                  <ValidationField label="Ciudades en la Ruta" value={formData.ciudades_visitadas} onChange={(v) => setFormData({...formData, ciudades_visitadas: v})} icon={MapPin} />
+                </div>
                 <ValidationField label="Fechas Específicas / Salidas" value={formData.salidas_especificas} onChange={(v) => setFormData({...formData, salidas_especificas: v})} icon={Calendar} type="textarea" />
               </div>
             </section>
@@ -163,7 +168,12 @@ const ValidationScreen = ({ programData, onSave, onCancel }) => {
               <div className="space-y-5">
                 <ValidationField label="Políticas de Cancelación" value={formData.politicas_cancelacion} onChange={(v) => setFormData({...formData, politicas_cancelacion: v})} type="textarea" />
                 <ValidationField label="Notas Importantes" value={formData.notas_importantes} onChange={(v) => setFormData({...formData, notas_importantes: v})} type="textarea" />
-                <ValidationField label="Excursiones Opcionales" value={formData.excursiones_opcionales} onChange={(v) => setFormData({...formData, excursiones_opcionales: v})} type="textarea" />
+                  <ValidationField 
+                    label="Actividades y Tours Opcionales" 
+                    value={formData.excursiones_opcionales} 
+                    onChange={(v) => setFormData({...formData, excursiones_opcionales: v})}
+                    type="textarea"
+                  />
                 <ValidationField label="Feriados / Suplementos" value={formData.feriados} onChange={(v) => setFormData({...formData, feriados: v})} type="textarea" />
                 <ValidationField label="Condiciones Especiales" value={formData.condiciones_especiales} onChange={(v) => setFormData({...formData, condiciones_especiales: v})} type="textarea" />
               </div>

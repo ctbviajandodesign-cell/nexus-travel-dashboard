@@ -491,6 +491,8 @@ function App() {
                     destino_principal:   newData.destino_principal,
                     pais_destino:        newData.pais_destino,
                     ciudad_destino:      newData.ciudad_destino,
+                    paises_visitados:    newData.paises_visitados,
+                    ciudades_visitadas:  newData.ciudades_visitadas,
                     aeropuerto_salida:   newData.aeropuerto_salida,
                     ciudad_salida:       newData.ciudad_salida,
                     aerolinea:           newData.aerolinea,

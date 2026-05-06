@@ -78,7 +78,12 @@ const ProgramDetail = ({ program, onBack }) => {
               </div>
               <h1 className="text-6xl font-black mb-6 tracking-tighter leading-none">{program.nombre}</h1>
               <div className="flex flex-wrap items-center gap-8 text-white/90">
-                <div className="flex items-center gap-2.5"><MapPin size={20} className="text-accent-gold" /><span className="text-sm font-black uppercase tracking-wider">{program.pais_destino} • {program.ciudad_destino}</span></div>
+                <div className="flex items-center gap-2.5">
+                   <MapPin size={20} className="text-accent-gold" />
+                   <span className="text-sm font-black uppercase tracking-wider">
+                      {program.paises_visitados || program.pais_destino} • {program.ciudades_visitadas || program.ciudad_destino}
+                   </span>
+                </div>
                 <div className="flex items-center gap-2.5"><Calendar size={20} className="text-accent-gold" /><span className="text-sm font-black uppercase tracking-wider">{program.duracion_label}</span></div>
                 {program.ciudad_salida && <div className="flex items-center gap-2.5"><Plane size={20} className="text-blue-400" /><span className="text-sm font-black uppercase tracking-wider">Sale de {program.ciudad_salida}</span></div>}
               </div>
