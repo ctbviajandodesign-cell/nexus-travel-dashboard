@@ -126,7 +126,24 @@ const ValidationScreen = ({ data, onSave, onCancel }) => {
                 onChange={(v) => setFormData({...formData, ciudad_destino: v})}
                 icon={MapPin}
               />
-              <div className="grid grid-cols-2 gap-4">
+              <ValidationField 
+                label="Ciudad de Salida" 
+                value={formData.ciudad_salida} 
+                onChange={(v) => setFormData({...formData, ciudad_salida: v})}
+                icon={MapPin}
+              />
+              <ValidationField 
+                label="Aeropuerto Salida (GYE/UIO)" 
+                value={formData.aeropuerto_salida} 
+                onChange={(v) => setFormData({...formData, aeropuerto_salida: v})}
+                icon={MapPin}
+              />
+              <ValidationField 
+                label="Aerolínea" 
+                value={formData.aerolinea} 
+                onChange={(v) => setFormData({...formData, aerolinea: v})}
+                icon={Layers}
+              />
                  <ValidationField 
                   label="Días" 
                   value={formData.duracion_dias} 

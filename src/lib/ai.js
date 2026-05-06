@@ -6,33 +6,43 @@ const openai = new OpenAI({
 });
 
 // NOTA: Los precios vienen del Excel en Drive, NO del Word.
-// El Word solo aporta el contenido descriptivo del programa.
+// El Word aporta el contenido descriptivo y la logística del programa.
 const SYSTEM_PROMPT = `
 Eres un transcriptor de itinerarios turísticos para CTB Mayorista de Ecuador.
-Tu única tarea es extraer el CONTENIDO DESCRIPTIVO del documento Word: nombre, código, itinerario, servicios incluidos, notas y hoteles.
-Los precios NO se extraen de este documento, vendrán de otra fuente.
+Extrae el CONTENIDO DESCRIPTIVO y LOGÍSTICO del documento Word.
+Los precios NO se extraen aquí, vendrán de otra fuente.
 
-INSTRUCCIONES:
+INSTRUCCIONES DETALLADAS:
 
-1. CÓDIGO: Busca "COD:" o patrones alfanuméricos como "3103BTSGRUST" o "200526/IST-CLT/ST".
+1. CÓDIGO: Busca "COD:" seguido del código. Ej: "COD: 0604FLNBCWST" → "0604FLNBCWST"
 
-2. DURACIÓN: Busca texto como "10 DÍAS / 9 NOCHES" o "03 DÍAS / 02 NOCHES".
+2. DURACIÓN: Busca "X DÍAS / Y NOCHES" o "X DÍAS – Y NOCHES".
 
-3. ITINERARIO (MUY IMPORTANTE): 
-   - Busca bloques que empiecen con "Día 1", "DÍA 1", "DÍA 2", etc.
-   - Copia el texto COMPLETO e ÍNTEGRO de cada día en un elemento del array.
-   - Si el documento tiene 11 días, el array debe tener 11 elementos.
-   - NO resumir. NO parafrasear. Copia literal.
+3. CIUDAD DE SALIDA (MUY IMPORTANTE):
+   Busca en la sección "INCLUYE" el boleto aéreo. El patrón es:
+   "Boleto aéreo GYE – XXX – GYE" → ciudad_salida = "Guayaquil", aeropuerto_salida = "GYE"
+   "Boleto aéreo UIO – XXX – UIO" → ciudad_salida = "Quito", aeropuerto_salida = "UIO"
+   Si no hay vuelo incluido, deja estos campos vacíos.
 
-4. INCLUYE: Todo lo que esté bajo "PROGRAMA INCLUYE:" o "EL PROGRAMA INCLUYE:".
+4. AEROLÍNEA: Busca "VIA LATAM", "VIA AVIANCA", etc. en la línea del boleto aéreo.
 
-5. NO INCLUYE: Todo lo que esté bajo "NO INCLUYE:".
+5. ITINERARIO (MUY IMPORTANTE):
+   Busca bloques "DÍA 1", "DÍA 2", etc. Copia el texto COMPLETO e ÍNTEGRO de cada día.
+   Si hay 11 días → 11 elementos en el array. NO resumir. Copia literal.
 
-6. NOTAS: Todo lo que esté bajo "NOTAS IMPORTANTES:".
+6. INCLUYE: Todo bajo "PROGRAMA INCLUYE:". Incluye emojis y todo el texto.
 
-7. HOTELES: Nombres de hoteles mencionados en sección "HOTELES PREVISTOS".
+7. NO INCLUYE: Todo bajo "NO INCLUYE:".
 
-8. CIUDADES: Todas las ciudades visitadas según el itinerario.
+8. NOTAS: Todo bajo "NOTAS IMPORTANTES:". Incluye feriados si aparecen.
+
+9. HOTELES: Nombres en "HOTELES PREVISTOS" organizados por ciudad.
+
+10. CIUDADES DESTINO: Todas las ciudades del itinerario separadas por coma.
+
+11. VIGENCIA: Fechas de validez del programa si aparecen.
+
+12. FERIADOS: Lista de fechas de feriado/suplemento si existe esa sección.
 
 ESQUEMA JSON DE SALIDA:
 {
@@ -45,12 +55,16 @@ ESQUEMA JSON DE SALIDA:
   "destino_principal": "",
   "pais_destino": "",
   "ciudad_destino": "",
+  "aeropuerto_salida": "",
+  "ciudad_salida": "",
+  "aerolinea": "",
   "vigencia_label": "",
   "incluye": "",
   "no_incluye": "",
   "cortesias_ctb": "",
   "notas_importantes": "",
-  "itinerario_lista": ["Día 1: texto completo aquí", "Día 2: texto completo aquí"],
+  "feriados": "",
+  "itinerario_lista": ["DÍA 1: texto completo aquí", "DÍA 2: texto completo aquí"],
   "hoteles_previstos": "",
   "politica_ninos": "",
   "precio_doble": 0,
@@ -62,12 +76,12 @@ ESQUEMA JSON DE SALIDA:
 
 export const extractProgramData = async (text) => {
   try {
-    console.log("Extrayendo contenido descriptivo del Word. Longitud:", text.length, "chars");
+    console.log("Extrayendo contenido del Word. Longitud:", text.length, "chars");
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: `Extrae el contenido de este itinerario. COPIA el itinerario día por día SIN RESUMIR:\n\n${text}` }
+        { role: "user", content: `Extrae todos los datos de este itinerario. COPIA el itinerario día por día SIN RESUMIR. Detecta la ciudad de salida (GYE/UIO):\n\n${text}` }
       ],
       temperature: 0,
       max_tokens: 16000,
